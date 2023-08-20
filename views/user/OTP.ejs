@@ -1,0 +1,20 @@
+OTP verification Here
+
+Welcome <%= username %>
+
+<!-- <% if (typeof message !== 'undefined') { %>
+          
+    <div
+      class="alert alert-<%= message.type === 'success' ?'success' : 'danger' %>"
+      role="alert"
+    >
+      <%= message.body %>
+    </div>
+    <% } %> -->
+    <% if (typeof message !== 'undefined') { %>
+      <p style="color: orange;"><%= message %></p>
+       <% } %>
+
+       <a href="/logout" class="header-btn">
+        logout
+    </a>
