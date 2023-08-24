@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>zAYn Foods- OTP-mobile verification</title>
+  <style>
+    .container{
+      width:302px;
+      height:175px;
+      position: absolute;
+      left:0px;
+      right: 0px;
+      margin: auto;
+      margin-top: 250px;
+      }
+      #number ,#verificationcode{
+        width:calc(100% - 24px);
+        padding:10px;
+        font-size:20px;
+        margin-bottom:5px;
+        outline:none;
+      }
+      #recapcha-container{
+        margin-bottom: 5px;
+
+      }
+      #send, #verify{
+        width:100%;
+        height:40px;
+        outline:none;
+        }
+        .p-config, .n-config{
+          width:calc(100% - 22px);
+          border:2px solid green;
+          border-radius: 4px;
+          padding: 8px 10px;
+          margin:4px 0px;
+          background-color: rgba(0, 249, 12,0.5);
+          display:none;
+        }
+        .n-config{
+          border-color: red;
+          background-color: rgba(255,0,4,0.5)  ;
+        }
+  </style>
+   <script src="https://www.google.com/recaptcha/enterprise.js?render=6LcaycAnAAAAAKJd3iv-HYvuu41cW8ZhJ8p1uyh2"></script>
+</head>
+<body>
+    <%- body %>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <!-- <script src="https://www.gstatic.com/firebasejs/6.0.2/firebase.js"></script> -->
+   
+    <script>
+        function onClick(e) {
+          e.preventDefault();
+          grecaptcha.enterprise.ready(async () => {
+            const token = await grecaptcha.enterprise.execute('6LdqdMMnAAAAAPUJAhJKWQ7Ab5noorWsZm60UGOD', {action: 'submit'});
+            // IMPORTANT: The 'token' that results from execute is an encrypted response sent by
+            // reCAPTCHA Enterprise to the end user's browser.
+            // This token must be validated by creating an assessment.
+            // See https://cloud.google.com/recaptcha-enterprise/docs/create-assessment
+          });
+        }
+        </script>
+</body>
+</html>
+
+
+
+   

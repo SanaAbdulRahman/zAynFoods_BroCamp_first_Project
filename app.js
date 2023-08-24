@@ -8,11 +8,14 @@ const mongoose=require('mongoose');
 const path=require('path');
 const ejs=require('ejs');
 const bodyParser=require('body-parser');
+const flash = require('connect-flash');
+
 const morgan=require('morgan');
 const session = require('express-session');
 const MongoStore = require('connect-mongodb-session')(session);
 const expressLayouts=require('express-ejs-layouts');
 
+app.use(flash())
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -28,6 +31,10 @@ app.use(session({secret:"my-session-secretKey",
     store: store
 }))
 
+app.use((req,res,next)=>{
+    res.locals.user=req.session.user;
+    next();
+});
 const adminRouter=require('./routes/adminRouter');
 const userRouter=require('./routes/userRouter');
 // app.use(bodyParser.json());

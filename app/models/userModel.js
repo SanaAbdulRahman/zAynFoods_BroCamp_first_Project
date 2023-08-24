@@ -42,11 +42,11 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    isAdmin: {
+    Status: {
       type: Boolean,
       default: false,
     },
-    isDeleted: {
+    isActive: {
       type: Boolean,
       default: false,
     },

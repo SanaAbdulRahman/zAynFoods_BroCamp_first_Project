@@ -5,10 +5,15 @@
         <!-- <img src="https://www.freepnglogos.com/uploads/twitter-logo-png/twitter-bird-symbols-png-logo-0.png" alt=""> -->
         <img src="https://www.lansweeper.com/wp-content/uploads/2018/05/ASSET-USER-ADMIN.png" alt="">
     </div>
+    <% if (typeof message !== 'undefined') { %>
+		<p style="color: orange;"><%= message %></p>
+	   <% } %>
+
+
     <div class="text-center mt-4 name">
         Admin Login
     </div>
-    <form action="/adminLogin" method="post" class="p-3 mt-3">
+    <form action="/admin/adminVerify" method="post" class="p-3 mt-3">
         <div class="form-field d-flex align-items-center">
             <span class="far fa-user"></span>
             <input type="text" name="name" id="userName" placeholder="Username">

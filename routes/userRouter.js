@@ -14,8 +14,16 @@ router.post('/register',userRegister.insertUser);
 
 router.get('/login',auth.isLogout,userRegister.loginPage)
 router.post('/login',userRegister.postLogin)
+router.get('/cart',auth.isLogin,userRegister.cartPage);
+//router.get('/verify',userRegister.verify);
 
-router.get('/OTP',auth.isLogin,userRegister.otpVerify);
+// router.get('/OTP',userRegister.phoneAauth);
+ //router.post('/send-otp',userRegister.requestOtp);
+
+ //router.get('/verifyOtp',userRegister.verifyOtp)
+// router.post('/verifyOtp',userRegister.insertOtp);
+
+//router.get('/OTP',userRegister.otpVerify);
 router.get('/home',auth.isLogin,userRegister.loadHome);
-router.get('/logout',userRegister.logout)
+router.get('/logout',auth.isLogin,userRegister.logout)
 module.exports = router;

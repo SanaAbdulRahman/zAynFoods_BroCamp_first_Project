@@ -1,0 +1,164 @@
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+<form class="form-horizontal" action="/admin/edit-product/<%=product._id%>" method="post" enctype="multipart/form-data">
+<fieldset>
+
+<!-- Form Name -->
+<legend>PRODUCTS</legend>
+
+<!-- Text input-->
+
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="product_name">PIZZA NAME</label>  
+  <div class="col-md-4">
+  <input id="product_name" name="name" value="<%=product.name%>" class="form-control input-md" required="" type="text">
+    
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="product_name_fr">PRODUCT CATEGORY </label>  
+  <div class="col-md-4">
+  <input id="product_name_fr" name="product_name_fr" value="<%=product.category.name%>" class="form-control input-md" required="" type="text">
+    
+  </div>
+</div>
+
+<!-- Select Basic -->
+
+
+<!-- Textarea -->
+<div class="form-group">
+    <label class="col-md-4 control-label" for="product_description">DESCRIPTION</label>
+    <div class="col-md-4">                     
+      <textarea class="form-control" id="category_description" value="<%=product.description%>" name="category_description"></textarea>
+    </div>
+  </div>
+
+
+<!-- Text input-->
+<!-- <div class="form-group">
+  <label class="col-md-4 control-label" for="available_quantity">AVAILABLE QUANTITY</label>  
+  <div class="col-md-4">
+  <input id="available_quantity" name="available_quantity" placeholder="AVAILABLE QUANTITY" class="form-control input-md" required="" type="text">
+    
+  </div>
+</div> -->
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="product_weight">PIZZA SIZE</label>  
+  <div class="col-md-4">
+  <input id="product_weight" name="size" value="<%=product.size%>" class="form-control input-md"  type="text">
+    
+  </div>
+</div>
+
+
+
+<!-- Textarea -->
+<!-- <div class="form-group">
+  <label class="col-md-4 control-label" for="product_name_fr">PRODUCT DESCRIPTION FR</label>
+  <div class="col-md-4">                     
+    <textarea class="form-control" id="product_name_fr" name="product_name_fr"></textarea>
+  </div>
+</div> -->
+<div class="form-group">
+    <label class="col-md-4 control-label" for="comment">PRICE</label>  
+    <div class="col-md-4">
+    <input id="comment" name="price" value="<%=product.pice%>" class="form-control input-md"  type="text">
+      
+    </div>
+  </div>
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="percentage_discount">PERCENTAGE DISCOUNT(OFFER)</label>  
+  <div class="col-md-4">
+  <input id="percentage_discount" name="offer" value="<%=product.offer%>" class="form-control input-md"  type="text">
+    
+  </div>
+</div>
+
+<!-- Text input-->
+<!-- <div class="form-group">
+  <label class="col-md-4 control-label" for="stock_alert">STOCK ALERT</label>  
+  <div class="col-md-4">
+  <input id="stock_alert" name="stock_alert" placeholder="STOCK ALERT" class="form-control input-md" required="" type="text">
+    
+  </div>
+</div> -->
+
+<!-- Search input-->
+<!-- <div class="form-group">
+  <label class="col-md-4 control-label" for="stock_critical">STOCK CRITICAL</label>
+  <div class="col-md-4">
+    <input id="stock_critical" name="stock_critical" placeholder="STOCK CRITICAL" class="form-control input-md" required="" type="search">
+    
+  </div>
+</div> -->
+
+<!-- Search input-->
+
+
+<!-- Text input-->
+
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="approuved_by">RATING (OUT OF 5)</label>  
+  <div class="col-md-4">
+  <input id="approuved_by" name="rating" value="<%=product.rating%>" class="form-control input-md"  type="text">
+    
+ <!-- File Button --> 
+<div class="form-group">
+  <label class="col-md-4 control-label" for="image">MAIN-IMAGE</label>
+  <div class="col-md-4">
+    <img width="50px" height="50px"  src="<%=product.image%>" alt="">
+    <input id="filebutton" name="image" class="input-file" type="file" accept="image/*">
+  </div>
+</div>
+<!-- File Button --> 
+<div class="form-group">
+  <label class="col-md-4 control-label" for="filebutton">AUXILIARY IMAGES</label>
+  <div class="col-md-4">
+    <input id="filebutton" name="filebutton" class="input-file" type="file">
+  </div>
+</div>
+
+<!-- Button -->
+<div class="form-group">
+  <!-- <label class="col-md-4 control-label" for="singlebutton">Single Button</label> -->
+  <div class="col-md-4">
+    <button id="singlebutton" type="submit" name="singlebutton" class="btn btn-primary">Submit</button>
+  </div>
+  </div>
+
+</fieldset>
+</form>
+
+
+<script>
+    const categorySelect=document.querySelector('select[name="category"]');
+    const categoryDescription=document.querySelector('#category_description');
+
+    categorySelect.addEventListener('change',(event)=>{
+        const selectedCategoryId=event.target.value;
+        console.log(selectedCategoryId);
+        const selectedCategory=categories.find(category=>category._id=== selectedCategoryId);
+        console.log(selectedCategory);
+
+        if(selectedCategory){
+            categoryDescription.value=selectedCategory.description;
+
+        }else{
+            categoryDescription.value='';
+        }
+    });
+
+</script>
