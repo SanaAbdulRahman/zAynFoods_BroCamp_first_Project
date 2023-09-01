@@ -1,21 +1,24 @@
+const { string } = require('joi');
 const mongoose=require('mongoose');
 const productSchema=mongoose.Schema({
-    
-    name:{
-        type:String,
-       
-    },
     category:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Category',
                 //category and description
     },
-    size:{
-        type:String   //Pizza - small , medium or large
+    name:{
+        type:String,
+       
     },
-    // size:[{
-    //     type:String   //Pizza - small , medium or large
-    // }],
+    
+    description:{
+        type:String,
+       
+    },
+    typeOfDish:{
+        type:String
+    },
+    
     price:{
         type:Number,
         default:0
@@ -24,10 +27,16 @@ const productSchema=mongoose.Schema({
         type:String,
      
     },
-    description:{
-        type:String,
+    quantity:{
+        type:Number,
        
     },
+    stock:{
+        type:Number
+    },
+//    size:[{
+//         type:String   //Pizza - small , medium or large
+//     }],
     rating:{
         type:Number,
         default:0
@@ -36,6 +45,8 @@ const productSchema=mongoose.Schema({
         type:Number,
         default:0
     },
+   
+    
     image:{
         type:String,
         default:''
@@ -49,7 +60,9 @@ const productSchema=mongoose.Schema({
     //     type:mongoose.Schema.Types.ObjectId,
     //     ref:'Offers'
     // },
-    
+    isDeleted: { 
+        type: Boolean, 
+        default: false }, // Added field for soft delete
     isFeatured:{
         type:Boolean,
         default:false

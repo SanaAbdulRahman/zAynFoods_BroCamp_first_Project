@@ -185,64 +185,81 @@
 </div>
 </div>
                             <!-- DIRECT CHAT -->
-                            <div class="card">
+                            <div class="card ">
                                 <div class="card-header border-0">
-                                    <h3 class="card-title">Users</h3>
-                                    <div class="card-tools">
-                                        <!-- <a href="add-product" class="btn btn-tool btn-lg btn-primary">
-                                            <i class="bi bi-plus"></i>New Product
-                                        </a> -->
+                                    <h3 class="card-title">Products</h3>
+                                    <div class="card-tools me-2">
+                                        <a href="productList" class="btn btn-tool btn-lg btn-primary me-2">
+                                            <i class="bi "></i>Back to Product List
+                                        </a>
                                         <!-- <a href="#" class="btn btn-tool btn-sm">
                                             <i class="bi bi-list"></i>
                                         </a> -->
                                     </div>
+                                    
                                 </div>
                                 <div class="card-body table-responsive p-0">
+                                    <%if (count>0) {%>
+                                     
+                                         
                                     <table class="table table-striped align-middle">
                                         <thead>
                                             <tr>
+                                                <th>Image</th>
                                                 <th>Name</th>
-                                                <th>Email</th>
-                                                <th>Mobile</th>
-                                                <th>Status</th>
+                                                <th>Category</th>
+                                                <th>Type</th>
+                                                <th>Price</th>
+                                                <th>Quantity/Person</th>
+                                                <th>Stock</th>
+                                                <th>Rating</th>
                                                 <th>Actions</th>
-
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <% users.forEach(user => { %>
+                                            <% products.forEach(product => { %>
                                                 <tr>
-                                                    <td><%= user.name %></td>
-                                                    <td><%= user.email %></td>
-                                                    <td>
-                                                        <%= user.mobile %>
-                                                    </td>
-                                                   
-                                                    <td><%= user.Status %></td>
                                                     
+                                                    <td><img width="70px" height="70px" src="/assetsimages/dish/<%= product.image %>" alt="" > </td>
+                                                    <td><%= product.name %></td>
+                                                    <td><%= product.category ? product.category.name : '' %></td> <!-- Access category name from product -->
+                                                    <td><%= product.typeOfDish %></td>
+                                                    
+                                                    <td>INR: <%= parseFloat(product.price).toFixed(2) %></td>
 
-                                                    <!-- Inside your user list loop -->
-                                                    <!-- Inside your user list loop -->
-                                                        <td>
-                                                            <form action="/admin/block-user" method="POST" class="blockForm">
-                                                                <input type="hidden" name="userId" value="<%= user._id %>">
-                                                                <button type="button" class="btn btn-warning btn-block-toggle btn-small" data-formclass="blockForm" data-status="<%= user.Status %>">
-                                                                    <% if (user.Status === 'Active') { %>
-                                                                        <i class="bi bi-person-x"></i> Block
-                                                                    <% } else { %>
-                                                                        <i class="bi bi-person-check"></i> Unblock
-                                                                    <% } %>
-                                                                </button>
-                                                            </form>
-                                                        </td>
-                                                        <!-- <button type="button" class="btn btn-success btn-small confirmBlock" data-formid="back<%= user._id %>">
-                                                            <i class="bi bi-person-check">Unblock</i>
-                                                        </button> -->
+                                                    <td><%= product.quantity %></td> 
+                                                    <td><%= product.stock %></td> 
 
-                                                </tr>
-                                                <% }); %>
+                                                    <td><%= product.rating %></td> 
+
+                                                    <td class="text-end">
+
+                                                        <div class="d-flex flex-row  gap-2">
+                                    
+                                                          <!-- <a href="/view/<%= product._id %>" type="button" class="btn btn-primary btn-small">
+                                                            <i class="bi bi-eye"></i>
+                                                          </a> -->
+                                    
+                                                         
+                                                          <form action="/admin/restore-product/<%= product._id %>" method="POST" id="restoreForm_<%= product._id %>">
+                                                            <button type="button" class="btn btn-success btn-small confirmRestore" data-formid="restoreForm_<%= product._id %>">
+                                                                <i class="bi bi-arrow-clockwise"></i>
+                                                            </button>
+                                                        </form>
+
+                                                                                          
+
+
+                                                    <!-- Other columns... -->
+                                                  </tr>
+                                                <% }); %> 
                                         </tbody>
+
                                     </table>
+
+                                    <% } else { %>
+                                        <h3 class="text-center">There are no products</h3>
+                                        <% } %>
                                 </div>
                             </div>
                             <!-- /.direct-chat -->
@@ -268,31 +285,15 @@
     <!--begin::Script-->
     <!--begin::Third Party Plugin(OverlayScrollbars)-->
     <script>
-        const toggleButtons = document.querySelectorAll('.btn-block-toggle');
+        const confirmLinks = document.querySelectorAll('.confirmRestore');
     
-        toggleButtons.forEach(button => {
-            button.addEventListener('click', async event => {
-                const formClass = button.getAttribute('data-formclass');
-                const status = button.getAttribute('data-status');
-                const action = status === 'Active' ? 'Block' : 'Unblock';
-                const result = confirm(`Are you sure you want to ${action} this user?`);
-                
+        confirmLinks.forEach(link => {
+            link.addEventListener('click', event => {
+                const formId = link.getAttribute('data-formid');
+                const result = confirm('Are you sure you want to restore this product?');
                 if (result) {
-                    const form = document.querySelector(`.${formClass}`);
-                    const userId = form.querySelector('[name="userId"]').value;
-    
-                    const response = await fetch(`/admin/block-user/${userId}`, {
-                        method: 'POST',
-                    });
-                    
-                    if (response.ok) {
-                        // Reload the page to reflect changes
-                        window.location.reload();
-                    } else {
-                        console.error('Failed to update user status');
-                    }
+                    document.getElementById(formId).submit();
                 }
             });
         });
     </script>
-    

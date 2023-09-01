@@ -3,14 +3,22 @@
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <!------ Include the above in your HEAD tag ---------->
 
+
+
 <form class="form-horizontal" action="/admin/add-category" method="post">
 <fieldset>
-
+  <a href="categoryList" class="btn btn-primary">Back to Category List</a>
+  <br>
+  <br>
+  
 <!-- Form Name -->
 <legend>ADD CATEGORY</legend>
 
 <!-- Text input-->
-
+<% if (typeof message !== 'undefined') { %>
+  <p style="color: orange;"><%= message %></p>
+   <% } %>
+    
 
 <!-- Text input-->
 <div class="form-group">
@@ -21,12 +29,12 @@
   </div>
 </div>
 
-<div class="form-group">
+<!-- <div class="form-group">
     <label class="col-md-4 control-label" for="product_description">CATEGORY DESCRIPTION</label>
     <div class="col-md-4">                     
       <textarea class="form-control" id="product_description" name="descriptiion"></textarea>
     </div>
-  </div>
+  </div> -->
 <!-- Text input-->
 <!-- <div class="form-group">
   <label class="col-md-4 control-label" for="product_name_fr">CATEGORY DESCRIPTION </label>  

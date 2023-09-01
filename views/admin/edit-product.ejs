@@ -14,21 +14,32 @@
 
 <!-- Text input-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="product_name">PIZZA NAME</label>  
+  <label class="col-md-4 control-label" for="product_name">DISH NAME</label>  
   <div class="col-md-4">
   <input id="product_name" name="name" value="<%=product.name%>" class="form-control input-md" required="" type="text">
     
   </div>
 </div>
 
-<!-- Text input-->
 <div class="form-group">
+  <label class="col-md-4 control-label" for="product_name">PRODUCT CATEGORY </label>
+  <div class="col-md-4">
+  <select id="category" name="category" required>
+      <% categories.forEach(category => { %>
+          <option value="<%= category._id %>" <%= product.category && product.category.equals(category._id) ? 'selected' : '' %>><%= category.name %></option>
+      <% }); %>
+  </select>
+</div>
+</div>
+
+<!-- Text input-->
+<!-- <div class="form-group">
   <label class="col-md-4 control-label" for="product_name_fr">PRODUCT CATEGORY </label>  
   <div class="col-md-4">
-  <input id="product_name_fr" name="product_name_fr" value="<%=product.category.name%>" class="form-control input-md" required="" type="text">
+  <input id="product_name_fr" name="category" value="<%= product.category ? product.category.name : '' %>" class="form-control input-md" required="" type="text">
     
   </div>
-</div>
+</div> -->
 
 <!-- Select Basic -->
 
@@ -37,11 +48,35 @@
 <div class="form-group">
     <label class="col-md-4 control-label" for="product_description">DESCRIPTION</label>
     <div class="col-md-4">                     
-      <textarea class="form-control" id="category_description" value="<%=product.description%>" name="category_description"></textarea>
+      <textarea class="form-control" id="category_description" value="<%=product.description%>" name="description"></textarea>
     </div>
   </div>
-
-
+  <div class="form-group">
+    <label class="col-md-4 control-label" for="product_weight">TYPE</label>
+    <div class="col-md-2">
+        <input type="radio" name="typeOfDish" value="Veg" <% if (product.typeOfDish === "Veg") { %>checked<% } %>>
+        <label for="veg">Veg</label>
+    </div>
+    <div class="col-md-2">
+        <input type="radio" name="typeOfDish" value="Non-Veg" <% if (product.typeOfDish !== "Veg") { %>checked<% } %>>
+        <label for="nonveg">Non-Veg</label>
+    </div>
+</div>
+  <div class="form-group">
+    <label class="col-md-4 control-label" for="stock_alert">QUANTITY </label>  
+    <div class="col-md-4">
+    <input id="stock_alert" name="quantity" value="<%=product.quantity%>" class="form-control input-md" required="" type="text">
+      
+    </div>
+  </div>
+  <!-- Text input-->
+  <div class="form-group">
+    <label class="col-md-4 control-label" for="stock_alert">STOCK </label>  
+    <div class="col-md-4">
+    <input id="stock_alert" name="stock"  value="<%=product.stock%>" class="form-control input-md" required="" type="text">
+      
+    </div>
+  </div>
 <!-- Text input-->
 <!-- <div class="form-group">
   <label class="col-md-4 control-label" for="available_quantity">AVAILABLE QUANTITY</label>  
@@ -52,13 +87,13 @@
 </div> -->
 
 <!-- Text input-->
-<div class="form-group">
-  <label class="col-md-4 control-label" for="product_weight">PIZZA SIZE</label>  
+<!-- <div class="form-group">
+  <label class="col-md-4 control-label" for="product_weight">SIZE</label>  
   <div class="col-md-4">
   <input id="product_weight" name="size" value="<%=product.size%>" class="form-control input-md"  type="text">
     
   </div>
-</div>
+</div> -->
 
 
 
@@ -72,7 +107,7 @@
 <div class="form-group">
     <label class="col-md-4 control-label" for="comment">PRICE</label>  
     <div class="col-md-4">
-    <input id="comment" name="price" value="<%=product.pice%>" class="form-control input-md"  type="text">
+    <input id="comment" name="price" value="<%=product.price%>" class="form-control input-md"  type="text">
       
     </div>
   </div>
@@ -115,12 +150,23 @@
   <div class="col-md-4">
   <input id="approuved_by" name="rating" value="<%=product.rating%>" class="form-control input-md"  type="text">
     
+
+
+
  <!-- File Button --> 
 <div class="form-group">
   <label class="col-md-4 control-label" for="image">MAIN-IMAGE</label>
   <div class="col-md-4">
-    <img width="50px" height="50px"  src="<%=product.image%>" alt="">
-    <input id="filebutton" name="image" class="input-file" type="file" accept="image/*">
+    <%if (product.image){%>
+    <img src="/assetsimages/dish/<%= product.image %>" id="displayimg" alt="Product Image" style="max-width: 100px;">
+    <% } %>
+    <!-- Image preview container -->
+    <img id="previewImage" src="" alt="Image Preview" style="max-width: 100px; display: none;" style="max-width: 100px;">
+     <!-- File input for uploading a new image -->
+    <input id="img" name="image" class="input-file" type="file" accept="image/*">
+
+       
+
   </div>
 </div>
 <!-- File Button --> 
@@ -161,4 +207,26 @@
         }
     });
 
+</script>
+
+
+<script>
+  const imgInput = document.getElementById('img');
+  const previewImage = document.getElementById('previewImage');
+
+  imgInput.addEventListener('change', function (event) {
+      const selectedFile = event.target.files[0];
+
+      if (selectedFile) {
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+              previewImage.src = e.target.result;
+              previewImage.style.display = 'block';
+              displayimg.style.display='none';
+          };
+
+          reader.readAsDataURL(selectedFile);
+      }
+  });
 </script>

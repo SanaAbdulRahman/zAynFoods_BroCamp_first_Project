@@ -43,8 +43,8 @@ const userSchema = mongoose.Schema(
       default: true,
     },
     Status: {
-      type: Boolean,
-      default: false,
+      type: String,
+      default: "Active",
     },
     isActive: {
       type: Boolean,
@@ -69,6 +69,10 @@ const userSchema = mongoose.Schema(
     wallet:{
       type:Number,
 
+    },
+    isBlocked:{
+      type:Boolean,
+      default:false
     },
     wishlist:[mongoose.Schema.Types.ObjectId],
     cart:
