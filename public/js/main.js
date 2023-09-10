@@ -1,7 +1,6 @@
 $(document).ready(function ($) {
     "use strict";
 
-
     var book_table = new Swiper(".book-table-img-slider", {
         slidesPerView: 1,
         spaceBetween: 20,
@@ -128,7 +127,7 @@ jQuery(window).on('load', function () {
     let old = 0;
     let dur = 0.4;
     let animation;
-
+console.log(targets);
     for (let i = 0; i < targets.length; i++) {
         targets[i].index = i;
         targets[i].addEventListener("click", moveBar);
@@ -169,4 +168,6 @@ jQuery(window).on('load', function () {
         }
 
     }
+    
+
 });

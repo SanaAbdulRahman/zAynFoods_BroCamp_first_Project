@@ -4,6 +4,7 @@ const User=require("../models/userModel")
 const Product=require("../models/productModel");
 const path=require("path");
 const fs=require("fs").promises;
+const sharp= require("sharp");
 // const multer=require('multer');
 // const path=require('path');
 
@@ -13,6 +14,33 @@ const bcrypt=require('bcrypt');
 // const unlink = util.promisify(fs.unlink);
 
 // const bodyparser= require('body-parser');
+
+function randomGen(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
+  
+  async function cropImage (path, topath) {
+   return new Promise((resolve,reject)=>{
+        sharp(path)
+        .resize({
+            width: 300,
+            height: 300,
+        })
+        .toFile(topath, function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(topath);
+            }
+        });
+    })
+}
 
 
 module.exports={
@@ -101,6 +129,7 @@ adminlogout: async (req, res) => {
     if (!admin) {
         return res.render('admin-login',{layout:'./layouts/admin-layout'}); // Redirect to your login page
     }
+    res.setHeader('Cache-Control', 'no-store');
     try {
         var count;
 
@@ -223,6 +252,8 @@ adminlogout: async (req, res) => {
     }
     try {
         const categories=await Category.find();
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+
         res.render('admin/add-product',{categories,admin:admin.name,layout:'./layouts/dashboard-layout'});
     } catch (error) {
         console.log(error);
@@ -301,34 +332,64 @@ posteditCategory:async (req,res)=>{
         res.status(500).send("Internal server error");
 }
 },
-createProduct:async (req,res)=>{
- const {category,name,description,typeOfDish,price,offer,quantity,stock,rating}=req.body
-//  const pname=req.body.name;
-//  console.log(req.body.name);
-     //console.log(pname,name,category,size,rating);
-     
-    const image=req.file?req.file.filename:'';
-    try {
-        const newProduct= new Product({
-            category:category,
-            name:name,
-            description:description,
-            typeOfDish:typeOfDish,
-            price:price,
-            offer:offer,
-            quantity:quantity,
-            stock:stock,
-            rating:rating,
-            image:image
+/* The above code is a JavaScript function that handles the creation of a new product. It is an
+asynchronous function that takes in a request object (req) and a response object (res) as
+parameters. */
 
-        })
+
+createProduct: async (req,imageName) => {
+   //console.log("next:",next);
+    const {category,name, description, typeOfDish, price, offer, quantity, stock, rating } = req.body;
+    
+    const image = req.file ? req.file.filename : '';
+    console.log(image);
+
+    try {
+        // Check if image needs cropping
+        if (req.file) {
+            const imagePath = path.join(__dirname, '../../public/assetsimages/dish/temp', req.file.filename);
+            const croppedImagePath = path.join(__dirname, '../../public/assetsimages/dish', 'cropped-' + req.file.filename);
+
+            // Crop the image to desired dimensions
+            await cropImage(imagePath, croppedImagePath);
+
+            // Delete the original image
+            fs.unlink(imagePath, (err) => {
+                if (err) {
+                    console.error('Error deleting original image:', err);
+                }
+            });
+        }
+
+        // Create a new product object
+        const newProduct = new Product({
+            category: category,
+            name: name,
+            description: description,
+            typeOfDish: typeOfDish,
+            price: price,
+            offer: offer,
+            quantity: quantity,
+            stock: stock,
+            rating: rating,
+            image: 'cropped-' + req.file.filename, // Use the cropped image filename
+        });
+
+        // Save the new product to the database
         const product = await newProduct.save();
-        console.log(product);
-        res.redirect('/admin/productList'); 
- } catch (error) {
-    console.error(error);
- }   
+        console.log('Product saved successfully:', product);
+        return product;
+
+        
+        //res.redirect('/admin/productList');
+    } catch (error) {
+        console.error('Error saving product to the database:', error);
+       //next(error)
+       throw error
+    }
 },
+
+
 updateProductLoad :async (req,res)=>{
     try {
         const admin=req.session.admin;
@@ -354,11 +415,11 @@ postEditProduct:async (req,res)=>{
         const { name, category, description,typeOfDish,quantity,stock,price, offer, rating } = req.body;
 
         // Find the product by ID
-        const product = await Product.findById(productId);
+        const product = {};
 
-        if (!product) {
-            return res.status(404).send('Product not found');
-        }
+        // if (!product) {
+        //     return res.status(404).send('Product not found');
+        // }
 
         // Update the product properties
         product.name = name;
@@ -377,17 +438,31 @@ postEditProduct:async (req,res)=>{
              if (req.file) {
                 // Delete the existing image if there is one
                 if (product.image) {
-                    const imagePath = path.join(__dirname, '../public/assetsimages/dish', product.image);
+                    const imagePath = path.join(__dirname, '../public/assetsimages/', product.image);
                     await fs.unlink(imagePath).catch(error => {
                         console.error('Error deleting image:', error);
                     });
                 }
+                
+                    const imagePath = path.join(__dirname, '../../public/assetsimages/dish/temp', req.file.filename);
+                    const croppedImagePath = path.join(__dirname, '../../public/assetsimages/dish', 'cropped-' + req.file.filename);
+        
+                    // Crop the image to desired dimensions
+                    await cropImage(imagePath, croppedImagePath);
+        
+                    // Delete the original image
+                    fs.unlink(imagePath, (err) => {
+                        if (err) {
+                            console.error('Error deleting original image:', err);
+                        }
+                    });
+                
     
                 // Save the new image filename to the product
-                product.image = req.file.filename;
+                product.image = 'cropped-' + req.file.filename ;
             }
         // Save the updated product
-        await product.save();
+        await Product.findByIdAndUpdate(productId,product);
 
         res.redirect('/admin/productList');
     } catch (error) {
@@ -448,5 +523,58 @@ restoreDeletedProduct:async (req,res)=>{
         console.error(error);
         res.status(500).render("pages/500",{layout:"./layouts/loginLayout"});
     }
-}
+},
+
+
+  
+// Function to crop and upload an image
+ uploadimage:async (req, toDir, prefix, crop) =>{
+    return new Promise(async (resolve, reject) => {
+      let dataToReturn = { message: 'No data is available!', error: 'No error' };
+      const tempPath = req.file.path;
+      const newFileName = prefix + randomGen(15) + path.extname(req.file.originalname).toLowerCase();
+      const targetPath = path.join(__dirname, "../../public/assetsimages/"+toDir+"/"+newFileName);
+     // const targetPath = path.join(__dirname, '../public/uploads/dish' + toDir + '/' + newFileName);
+      const ext = path.extname(req.file.originalname).toLowerCase();
+  
+      if (ext === '.png' || ext === '.jpg' || ext === '.jpeg' || ext === '.gif') {
+        if (crop) {
+          try {
+            // Crop the image using sharp
+            await sharp(tempPath)
+              .resize({ width: 260, height: 260 })
+              .toFile(targetPath);
+          } catch (err) {
+            dataToReturn.error = err;
+            reject(new Error('Internal server error detected!'));
+            console.log(err);
+            return;
+          }
+        } else {
+          try {
+            fs.renameSync(tempPath, targetPath);
+          } catch (err) {
+            dataToReturn.error = err;
+            reject(new Error('Internal server error detected!'));
+            console.log(err);
+            return;
+          }
+        }
+  
+        dataToReturn.message = 'File uploaded successfully!';
+        dataToReturn.imageName = newFileName;
+        resolve(dataToReturn);
+      } else {
+        fs.unlinkSync(tempPath, (err) => {
+          if (err) {
+            console.log(err);
+            reject(new Error('Internal server error detected!'));
+          }
+        });
+        reject(new Error('Invalid file format, only images are supported!'));
+      }
+    });
+  }
+  
+
 }

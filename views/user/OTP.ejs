@@ -1,30 +1,51 @@
-
-
-  <div class="container">
-    <form action="/send-otp" method="post" id="demo-form">
-    <div id="sender">
-      <input type="text" id="number" name="mobile"  placeholder="+91...">
-      <div id="recaptcha-container"></div>
-      <input type="submit" id="send" value="send">
-      <!-- <button class="g-recaptcha" 
-        data-sitekey="6LeRaMMnAAAAAAMKAPfxpVWtCwx-armW7UIpTD3t" 
-        data-callback='onSubmit' 
-        data-action='submit'>Submit</button> -->
-      <!-- <input type="submit" id="send" value="send"> -->
+<section class="vh-100">
+  <div class="container-fluid h-custom">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-md-9 col-lg-6 col-xl-5">
+          <% if (message.type) { %>
+          
+            <div
+              class="alert alert-<%= message.type === 'success' ?'success' : 'danger' %>"
+              role="alert"
+            >
+              <%= message.body %>
+            </div>
+            <% } %>
+          <img src="/assetsimages/loader.gif"
+            class="img-fluid" alt="Sample image">
+        </div>
+        <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+          <form method="post" action="/OTP">
+            <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
+              <h1 class=" mb-0 me-3">Enter OTP</h1>
+            </div>
+  
+            <div class="divider d-flex align-items-center my-4">
+              <p class="text-center fw-bold mx-3 mb-0">| O T P |</p>
+            </div><br><br>
+  
+            <!-- OTP input -->
+            <div class="form-outline mb-4">
+              <label class="form-label" for="form3Example3">Enter OTP</label>
+              <input name="otp"  type="text" id="form3Example3" class="form-control form-control-lg"
+                placeholder="OTP send to Email" pattern="\d{4}" required maxlength="4" autocomplete="one-time-code" inputmode="numeric"/>
+            </div>
+  
+  
+            <div class="text-center text-lg-start mt-4 pt-2">
+              <button type="submit" class="btn btn-primary btn-lg"
+                style="padding-left: 2.5rem; padding-right: 2.5rem;">Submit</button>
+             </form>
+            </div>
+  
+          </form>
+          <div class="text-center text-lg-start mt-4 pt-2">
+            <form method="POST" action="/resend-otp">
+              <input type="hidden" name="email" value='<%= formData.email %>'>
+              <button type="submit" class="btn btn-info btn-lg" style="padding-left: 1.5rem; padding-right: 1.5rem;">Resend OTP</button>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-    <div id="verifier" style="display: none;">
-      <input type="text" id="verificationcode" placeholder="OTP code">
-      <input type="button" id="verify" value="verify">
-      <div class="p-config">Number verfied</div>
-      <div class="n-config">OTP ERROR</div>
-    </div>
-  </form>
-  </div>
-
-  <script>
-    function onSubmit(token) {
-      document.getElementById("demo-form").submit();
-    }
-  </script>
-
- 
+  </section>

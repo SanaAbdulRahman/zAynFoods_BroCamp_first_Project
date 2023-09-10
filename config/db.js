@@ -1,5 +1,7 @@
 const mongoose=require('mongoose');
-const localDB=`mongodb://127.0.0.1:27017/zAYnFoodsDB`;
+// const localDB=`mongodb://127.0.0.1:27017/zAYnFoodsDB`;
+const localDB=process.env.MONGO_CONNECTION;
+
 
 const connectDB= async()=>{
     await mongoose.connect(localDB,{

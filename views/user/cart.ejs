@@ -1,3 +1,51 @@
+
+<style>
+    .summary{
+    background-color: #ddd;
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    padding: 4vh;
+    color: rgb(65, 65, 65);
+}
+@media(max-width:767px){
+    .summary{
+    border-top-right-radius: unset;
+    border-bottom-left-radius: 1rem;
+    }
+}
+.summary .col-2{
+    padding: 0;
+}
+.summary .col-10
+{
+    padding: 0;
+}.row{
+    margin: 0;
+}
+.checkoutbtn{
+    background-color: #000;
+    border-color: #000;
+    color: white;
+    width: 100%;
+    font-size: 0.7rem;
+    margin-top: 4vh;
+    padding: 1vh;
+    border-radius: 0;
+}
+.checkoutbtn:focus{
+    box-shadow: none;
+    outline: none;
+    box-shadow: none;
+    color: white;
+    -webkit-box-shadow: none;
+    -webkit-user-select: none;
+    transition: none; 
+}
+.checkoutbtn:hover{
+    color: white;
+}
+</style>
+
 <section class="main-banner" id="home">
     <div class="js-parallax-scene">
         <div class="banner-shape-1 w-100" data-depth="0.30">
@@ -10,38 +58,228 @@
     <div class="sec-wp">
         <div class="container">
             <div class="row">
-                <div class="col-lg-6">
-                    <div class="banner-text">
-                        <h1 class="h1-title">
-                            Welcome  to
-                            <span><%= username %>'s</span>
-                           Cart
-                        </h1>
-                        <p>This is Lorem ipsum dolor sit amet, consectetur adipisicing elit. Numquam eius
-                            vel tempore consectetur nesciunt? Nam eius tenetur recusandae optio aperiam.</p>
-                        <!-- <p>Hi, <%= username %></p> -->
-                        <!-- <a href="/api/v1/users/logout">Logout</a> -->
-                        <div class="banner-btn mt-4">
-                            <a href="/api/v1/users/logout" class="sec-btn">Logout</a>
+                <div class="col-lg-12">
+                    <div class="sec-title text-center mb-5">
+                       <a href="/home"> <p class="sec-sub-title mb-3">Back To Home</p></a>
+                        <h2 class="h2-title">Shopping Cart</h2>
+                        <div class="sec-title-shape mb-4">
+                            <img src="/assetsimages/title-shape.svg" alt="">
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    <div class="banner-img-wp">
-                        <div class="banner-img" style="background-image: url(/assetsimages/main-b.jpg);">
+            </div>           
+            <!-- <div class="row d-flex justify-content-center align-items-center h-100"> -->
+                <div class="row d-flex ">
+                <div class="col-8" >
+          
+                  <!-- <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="fw-normal mb-0 text-black">Shopping Cart</h3>
+                    <div>
+                      <p class="mb-0"><span class="text-muted">Sort by:</span> <a href="#!" class="text-body">price <i
+                            class="fas fa-angle-down mt-1"></i></a></p>
+                    </div>
+                  </div> -->
+                  
+<!-- 
+                  <div class="card rounded-3 mb-4">
+                    <div class="card-body p-4">
+                      <div class="row d-flex justify-content-between align-items-center">
+                        <div class="col-md-2 col-lg-2 col-xl-2">
+                          <img
+                            src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-shopping-carts/img1.webp"
+                            class="img-fluid rounded-3" alt="Cotton T-shirt">
                         </div>
+                        <div class="col-md-3 col-lg-3 col-xl-3">
+                          <p class="lead fw-normal mb-2">Basic T-shirt</p>
+                          <p><span class="text-muted">Size: </span>M <span class="text-muted">Color: </span>Grey</p>
+                        </div>
+                        <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                          <button class="btn btn-link px-2"
+                            onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                            <i class="fas fa-minus"></i>
+                          </button>
+          
+                          <input id="form1" min="0" name="quantity" value="2" type="number"
+                            class="form-control form-control-sm" />
+          
+                          <button class="btn btn-link px-2"
+                            onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                            <i class="fas fa-plus"></i>
+                          </button>
+                        </div>
+                        <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                          <h5 class="mb-0">$499.00</h5>
+                        </div>
+                        <div class="col-md-1 col-lg-1 col-xl-1 text-end">
+                          <a href="#!" class="text-danger"><i class="fas fa-trash fa-lg"></i></a>
+                        </div>
+                      </div>
                     </div>
-                    <div class="banner-img-text mt-4 m-auto">
-                        <h5 class="h5-title">Sushi</h5>
-                        <p>this is Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                  </div>
+                            -->
+                            
+          
+                   <div id="cart-items-container">
+
+                   </div>
+          
+                  <div class="card ">
+                    <div class="card-body">
+                      <button type="button" class="btn btn-warning btn-block btn-lg align-items-center w-100">Proceed to Pay</button>
                     </div>
+                  </div>
+          
                 </div>
-            </div>
+
+                <div class="card col-md-4 summary p-4">
+                    <div class="summary-title">
+                        <h5><b>Summary</b></h5>
+                    </div>
+                    <hr>
+                    <div class="row summary-item p-4">
+                        <div class="col p-4">ITEMS</div>
+                        <div class="col text-right p-4">&euro; 132.00</div>
+                    </div>
+                    <div class="p-4">
+                    <form class="summary-shipping p-4">
+                        <p>SHIPPING</p>
+                        <select class="form-control">
+                            <option class="text-muted">Standard-Delivery - &euro;5.00</option>
+                        </select>
+                        <p>GIVE CODE</p>
+                        <input id="code" class="form-control" placeholder="Enter your code">
+                    </form>
+                </div>
+                    <div class="row summary-total p-4">
+                        <div class="col">TOTAL PRICE</div>
+                        <div class="col text-right">&euro; 137.00</div>
+                    </div>
+                    <button class="checkoutbtn ">CHECKOUT</button>
+                </div>
+
+              </div> 
+                 
         </div>
     </div>
 </section>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    // Code to be executed when the DOM is ready
+    var cartItems=window.localStorage.getItem("cart-Items");
+    let arr = JSON.parse(cartItems);
 
-<!-- <h1>Welcome to Cart</h1>
-<h2>Hi, <%= username %></h2>
-<a href="/api/v1/users/logout">Logout</a> -->
+ //   const groupedItems = {};
+
+// Iterate through the cart items and group them by product _id
+// arr.forEach(arr => {
+//   const id = arr._id;
+//   if (!groupedItems[id]) {
+//     groupedItems[id] = { ...arr, count: 0 };
+//   }
+//   groupedItems[id].count++;
+// });
+
+//  console.log("GroupedItems :",groupedItems);
+
+    const groupedItems = arr.reduce((acc, arr) => {
+      const id = arr._id;
+     
+               
+      if (!acc[id]) {
+        acc[id] = [];
+      }
+      acc[id].push(arr);
+      console.log("acc is :",acc);
+      return acc;
+    }, {});
+   
+
+        // const groupedItems= Object.groupBy(arr, ({ _id }) => id);
+         console.log(groupedItems);
+
+    console.log("cartItems :DOMContentLoaded",arr);
+        document.getElementById("cartCount").innerHTML=arr.length;
+        
+        var div = document.getElementById('cart-items-container');
+        arr.forEach(pdct => {
+            console.log("count equal to :",pdct.count ,":undefined");
+            console.log("name :", pdct.name);
+        const countList=groupedItems[pdct._id];
+        console.log("product list id :",pdct._id,"->", countList);
+            var target = document.getElementById('test');
+
+
+
+
+//var str = '<p>'+pdct.name+'<span>'+pdct._id+'</span></p>';
+var str='<div class="card rounded-3 mb-4">'+
+                    '<div class="card-body p-4">'+
+                      '<div class="row d-flex justify-content-between align-items-center">'+
+                        '<div class="col-md-2 col-lg-2 col-xl-2">'+
+                          '<img src="/assetsimages/dish/'+pdct.image+'"'+
+                            'class="img-fluid rounded-3" >'+
+                        '</div>'+
+                        '<div class="col-md-3 col-lg-3 col-xl-3">'+
+                          '<p class="lead fw-normal mb-2">'+pdct.name+'</p>'+
+                          //'<p><span class="text-muted">Size: </span>M <span class="text-muted">Color: </span>Grey</p>'+
+                          '<p><span class="text-muted">Quantity per person: </span>'+pdct.quantity+'</p>'+
+
+                        '</div>'+
+                        '<div class="col-md-3 col-lg-3 col-xl-2 d-flex">'+
+                          '<button class="btn btn-link px-2"'+
+                            '>'+
+                            '<i class="fas fa-minus"></i>'+
+                          '</button>'+
+          
+                          '<input id="form1" min="0" name="quantity" value="'+pdct.count+'" type="number"'+
+                            'class="form-control form-control-sm" />'+
+          
+                          '<button class="btn btn-link px-2"'+
+                            '>'+
+                            '<i class="fas fa-plus"></i>'+
+                          '</button>'+
+                        '</div>'+
+                        '<div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">'+
+                          '<h5 class="mb-0">Rs.'+pdct.price+'</h5>'+
+                        '</div>'+
+                        '<div class="col-md-1 col-lg-1 col-xl-1 text-end">'+
+                          '<a href="#!" class="text-danger"><i class="fas fa-trash fa-lg"></i></a>'+
+                        '</div>'+
+                      '</div>'+
+                    '</div>'+
+                  '</div>'
+
+var temp = document.createElement('div');
+temp.innerHTML = str;
+div.appendChild(temp);
+document.getElementById("cartCount").innerHTML=arr.length;
+        });
+        console.log("length is :",arr.length);
+});
+   
+</script>
+
+
+
+<!-- const inventory = [{ name: "asparagus", type: "vegetables", quantity: 5 },
+{ name: "bananas", type: "fruit", quantity: 0 },
+{ name: "goat", type: "meat", quantity: 23 },  
+{ name: "cherries", type: "fruit", quantity: 5 },  
+{ name: "fish", type: "meat", quantity: 22 },];
+const result = Object.groupBy(inventory, ({ type }) => type);
+ 
+/* Result is:
+{
+  vegetables: [
+    { name: 'asparagus', type: 'vegetables', quantity: 5 },
+  ],
+  fruit: [
+    { name: "bananas", type: "fruit", quantity: 0 },
+    { name: "cherries", type: "fruit", quantity: 5 }
+  ],
+  meat: [
+    { name: "goat", type: "meat", quantity: 23 },
+    { name: "fish", type: "meat", quantity: 22 }
+  ]
+} -->

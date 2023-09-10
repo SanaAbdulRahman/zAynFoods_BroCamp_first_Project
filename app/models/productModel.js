@@ -4,7 +4,7 @@ const productSchema=mongoose.Schema({
     category:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Category',
-                //category and description
+              
     },
     name:{
         type:String,

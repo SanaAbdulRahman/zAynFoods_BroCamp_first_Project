@@ -14,9 +14,9 @@
                     <button class="menu-toggle"><span></span><span></span></button>
                     <nav class="header-menu">
                         <ul class="menu food-nav-menu">
-                            <li><a href="#home">Home</a></li>
-                            <li><a href="#menu">Our Dishes</a></li>
-                            <li><a href="#about">About</a></li>
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/product">Our Dishes</a></li>
+                            <!-- <li><a href="#about">About</a></li> -->
                             
                             <li><a href="#gallery">Gallery</a></li>
                             <!-- <li><a href="#blog">Blog</a></li> -->
@@ -30,23 +30,29 @@
                                 <i class="uil uil-search"></i>
                             </button>
                         </form>
+                       
                         <a href="/cart" class="header-btn header-cart">
                             <i class="uil uil-shopping-bag"></i>
-                            <span class="cart-number">3</span>
+                            <span class="cart-number" id="cartCount"></span>
                         </a>
-                        <a href="/login" class="header-btn">
-                            <% if (username) { %>
-                                <i class="uil uil-user-md"></i>
-                            <% } else { %>
-                             <i class="uil uil-signin"></i> 
-                             <% } %>
-                        </a>
-                    </div><%= username %>
-                    <% if (username) { %>
+                        <%if(user) {%>    
+                            
+                            <div class="header-btn">
+                               
+                           <i class="uil uil-user-md"> </i> 
+                     
+                        </div><%= username %> 
+                
+                </div>
                     <a href="/logout" class="header-btn">
                         <i class="uil uil-signout"></i>
                     </a>
-                    <% } %>
+                    
+                    <% } else { %>
+                         <a href="/login" class="header-btn">
+                            <i class="uil uil-signin"></i> 
+                        </a>
+                            <% } %>
                 </div>
             </div>
         </div>

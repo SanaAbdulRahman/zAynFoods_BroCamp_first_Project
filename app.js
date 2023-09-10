@@ -1,15 +1,14 @@
+require("dotenv").config();
 const connectDB=require('./config/db');
 connectDB();
 const express=require('express');
 const app=express();
-require("dotenv").config();
 const PORT=process.env.PORT || 5000;
 const mongoose=require('mongoose');
 const path=require('path');
 const ejs=require('ejs');
 const bodyParser=require('body-parser');
-const flash = require('connect-flash');
-
+const flash = require('express-flash');
 const morgan=require('morgan');
 const session = require('express-session');
 const MongoStore = require('connect-mongodb-session')(session);
@@ -20,14 +19,20 @@ app.use(flash())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+//session store
+
 const store = new MongoStore({
-    uri: 'mongodb://127.0.0.1:27017/user-auth',
+    uri: process.env.MONGO_CONNECTION,
+    //uri: 'mongodb://127.0.0.1:27017/zAYnFoodsDB',
     collection: 'sessions'
   });
-app.use(session({secret:"my-session-secretKey",
+  
+  //session config
+app.use(session({secret:process.env.COOKIE_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false },
+    // cookie: { secure: false },
+     cookie: { maxAge:1000 * 60 * 60 *24 },  //24 hours
     store: store
 }))
 

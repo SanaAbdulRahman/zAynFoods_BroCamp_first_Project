@@ -6,9 +6,9 @@ const categorySchema = new mongoose.Schema({
     unique:true
    
   },
-  slug:{
-    type:String
-  },
+  // slug:{
+  //   type:String
+  // },
   
 });
 

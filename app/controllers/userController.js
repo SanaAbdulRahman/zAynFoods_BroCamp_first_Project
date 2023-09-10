@@ -1,275 +1,179 @@
-//require('dotenv/config');
+
 require('dotenv').config();
 const User=require('../models/userModel');
-const EmailVerification=require('../models/emailverificationModel');
+const UserOTPVerification=require('../models/userOTPVerificationModel')
 const bcrypt=require('bcrypt');
 const nodemailer=require('nodemailer');
+const Product=require('../models/productModel');
+const Category=require('../models/categoryModel')
+const CartItem=require('../models/cartModel');
+const {AUTH_EMAIL,AUTH_PASS,HOST_SMTP,HOST_PORT}=process.env
 
-//require('dotenv').config();
+//Nodemailerr stuff
+let transporter=nodemailer.createTransport({
+  host: HOST_SMTP,
+  port: HOST_PORT,
+  secure: false,
+    tls: {
+        rejectUnauthorized: false,
+        minVersion: "TLSv1.2"
+    },
+    auth:{
+        user:AUTH_EMAIL,
+        pass:AUTH_PASS,
+    },
+});
 
-//require('../../config');
+//testing transport success
+transporter.verify((error,success)=>{
+  if(error){
+      console.log("hello",error);
+  }else{
+      console.log("Ready for messages");
+      console.log(success);
+  }
+  });
 
-//require('dotenv/config');
+  const sendOTPVerificationEmail=async({_id,email},res)=>{
+    try {
+      const otp=`${Math.floor(1000 + Math.random() * 9000)}`;
+      console.log("OTP :", otp);
+      //mail options
+      const mailOptions={
+        from : AUTH_EMAIL,
+        to : email,
+        subject:"Verify your Email",
+        html:`<p>Enter <b> ${otp} </b> in the app to verify your email address and complete the sign up</p>`
+        // <p>This code <b> expires in 1 hour </b>.</p>
+      };
+      //hash the otp
+      const saltRounds=10;
 
-// const secureString = async (uniqueString) => {
-//   const stringHash = await bcrypt.hash(uniqueString, 10);
-//   return stringHash;
-// };
-
-
-// const { v4: uuidv4 } = require("uuid");
-// const transporter = nodemailer.createTransport({
-//   host: "outlook",
-//   auth: {
-//     user: process.env.AUTH_EMAIL,
-//     pass: process.env.AUTH_PASS,
-//   },
-// });
-  
-// const { v4: uuidv4 } = require("uuid");
-
-
-// const transporter = nodemailer.createTransport({
-//   host: "smtp.office365.com",
-//   Port: 587,
-//  //secure: false, // Set to true if using port 465 with secure SMTP
-//   auth: {
-//     user: "zaynfoods23@hotmail.com",
-//     pass: "Bismillah786",
-//   },
-//   tls:{
-//     rejectUnauthorized:false
-//   }
-// });
-
-// Rest of your code for sending emails
-
-
-
-// transporter.verify((err, success) => {
-//   if (err) console.log(err);
-//   else {
-//     console.log("ready for messages");
-//     console.log(success);
-//   }
-// });
-
-  // const sendVerificationEmail = async ({ _id, email }, res) => {
-  //      console.log(_id,email)
-  //       try {
-  //         const url = "http://localhost:5000/";
-  //         const uniqueString = uuidv4();
-  //         //mailoptions
-  //         const mailOptions = {
-  //           from: "zaynfoods23@hotmail.com",
-  //           to: email,
-  //           subject: "zaynfoods : verify email",
-  //           html: `<p>Please verify your email to complete the registration process of zaynfoods.
-  //                  Click <a href="${
-  //                    url + "verify?userId=" + _id + "&uniqueString=" + uniqueString
-  //                  }">here</a> to verify.
-  //                  <p>This link will <b>expire in 2 hrs</b>.</p>`,
-  //         };
-  //         console.log("mmmmm")
-  //         const hashedString = await secureString(uniqueString);
-  //         const newEmailVerification = await new EmailVerification({
-  //           userId: _id,
-  //           uniqueString: hashedString,
-  //           createdAt: Date.now(),
-  //           expiresAt: Date.now() + 1000 * 60 * 60 * 2,
-  //         });
-  //         await newEmailVerification.save();
-         
-  //         await transporter.sendMail(mailOptions);
-          
-  //        res.redirect('/login');
-  //       } catch (error) {
-  //         console.log("email not sent");
-  //         console.log(error);
-  //       }
-  //     };
+      const hashedOTP=await bcrypt.hash(otp,saltRounds);
+      const newOTPVerification= await new UserOTPVerification({
+        userId:_id,
+        otp:hashedOTP,
+        createdAt:Date.now(),
+        expiresAt:Date.now() + 3600000
+      });
+      //save otp record
+      await newOTPVerification.save();
+      await transporter.sendMail(mailOptions);
+     
+      // res.json({
+      //   status:"PENDING",
+      //   message:"Verification otp email sent",
+      //   data:{
+      //     userId:_id,
+      //     email,
+      //   },
+      // });
+    } catch (error) {
+      console.log(error);
+      // res.json({
+      //   status:"FAILED",
+      //   message:error.message,
+      // })
+    }
+  }
+  // const sendEmail=async(mailOptions)=>{
+  //     try {
+  //         await transporter.sendMail(mailOptions)
+  //         return
+  //     } catch (error) {
+  //         throw error;
+  //     }
+  // };
 
 module.exports={
-     registerForm:async (req,res)=>{
-      try {
-        res.render('user/register',{layout:"./layouts/loginLayout"})
-      } catch (error) {
-        console.log(error.message);
-      }
-      
-    },
-    insertUser: async (req, res) => {
-    const { name, password, email, mobile } = req.body;
-    req.session.name = name;
-    req.session.email = email;
-    req.session.mobile = mobile;
-    req.session.password = password;
+//GET Register form
+registerForm:async (req,res)=>{
+              try {
+                res.render('user/register',{layout:"./layouts/loginLayout"})
+              } catch (error) {
+                console.log(error.message);
+              }
+              
+            },
+
+//POST register form
+insertUser: async (req, res) => {
+            const { name, password, email, mobile } = req.body;
+            req.session.name = name;
+            req.session.email = email; 
+            req.session.mobile = mobile;
+            req.session.password = password;
    
    
-    // Validate inputs (add more validation as needed)
-    if (!name  || !email || !mobile || !password) {
-      return res.render("user/register", {message: "All fields are required",layout:"./layouts/loginLayout" });
-    }
+              // Validate inputs (add more validation as needed)
+              if (!name  || !email || !mobile || !password) {
+                return res.render("user/register", {message: "All fields are required",layout:"./layouts/loginLayout" });
+              }
 
-    try {
-      // Check if the user already exists
-      const existingUser = await User.findOne({
-        $or: [{ name }, { email }],
-      });
-      if (existingUser) {
-        console.log("Username or email already exists");
-        // User with the same username or email already exists
-        return res.render("user/register", {
-          message: "Username or email already exists",
-          layout:"./layouts/loginLayout"
-        });
-      }
-      }
-      catch(error){
-        console.log(error);
-      }
+              try {
+                // Check if the user already exists
+                const existingUser = await User.findOne({
+                  $or: [{ name }, { email }],
+                });
+                if (existingUser) {
+                  console.log("Username or email already exists");
+                  // User with the same username or email already exists
+                  return res.render("user/register", {
+                    message: "Username or email already exists",
+                    layout:"./layouts/loginLayout"
+                  });
+                }
+                }
+                catch(error){
+                  console.log(error);
+                }
+                const newUser=new User({
+                  name:req.body.name,
+                  email:req.body.email,
+                  mobile:req.body.mobile,
+                  password:req.body.password
+                })
+                //const userData=await newUser.save()
+              // req.session.userId=userData._id;
+              newUser.save().then((result)=>{
+                //Handle account verification
+                //sendVerificationEmail(result,res);
+                sendOTPVerificationEmail(result,res);
+                req.session.flashData = {
+                  message: {
+                    type: "success",
+                    body: "Verify Email",
+                  },
+                  errors: {},
+                  formData: req.body,
+                };
+                req.session.userid = newUser._id.toString();
+                return res.render("user/OTP",{message: {
+                  type: "success",
+                  body: "Verify Email",
+                },formData: req.body,layout:"./layouts/loginLayout"});
+                //res.redirect('/OTP')
+              })
+                // req.session.user=userData;
+                //   res.redirect('/')
+              },
+//GET OTP Page
+getOTPPage: (req,res)=>{
+  res.render("user/OTP",{layout:"./layouts/loginLayout"});
+},
+// GET login page
+loginPage: async (req, res) => {
+            try {
+            const error = req.flash("error");
+            // const success = req.flash("success");
+              res.render("user/login", { message: error, layout:"./layouts/loginLayout" });
+          } catch (err) {
+            console.log(err);
+          }  
+          },
 
-      //res.redirect('/OTP');
-
-
-      const user=new User({
-        name:req.body.name,
-        email:req.body.email,
-        mobile:req.body.mobile,
-        password:req.body.password
-      })
-      const userData=await user.save()
-     // req.session.userId=userData._id;
-    
-      req.session.user=userData;
-        res.redirect('/home')
-
-
-    //   await sendVerificationEmail(userData, res);
-
-    //   req.flash(
-    //     'success',
-    //     'Verification email has been sent. Please check your email at https://mail.google.com/mail'
-    //    );
-     },
-     /* The above code is a JavaScript function that verifies an OTP (One-Time Password) for email
-     verification. */
-      // verify:async (req,res)=>{
-     
-      //   let { userId, uniqueString } = req.query;
-      //   console.log(userId);
-      //   console.log(uniqueString);
-      //   EmailVerification.find({ userId })
-      
-      //     .then((result) => {
-      //       if (result.length > 0) {
-      //         //checking that link expires
-      //         const { expiresAt } = result[0];
-      //         const hashedString = result[0].uniqueString;
-      //         if (expiresAt < Date.now()) {
-      //           console.log("expired");
-      //           EmailVerification.findOneAndDelete({ userId })
-      //             .then((result) => {
-      //               User.findByIdAndDelete({ _id: userId })
-      //                 .then(() => {
-      //                   console.log("signup again due to expired link");
-      //                   req.flash(
-      //                     "error",
-      //                     `Your verification link has expired.Signup again`
-      //                   );
-      
-      //                   res.redirect('/register');
-      //                 })
-      //                 .catch((error) => {
-      //                   console.log("err in user deletion");
-      //                 });
-      //             })
-      //             .catch((error) => {
-      //               console.log(error);
-      //               console.log("err in email deletion");
-      //             });
-      //         } else {
-      //           bcrypt
-      //           //link not expaires case
-      //             .compare(uniqueString, hashedString)
-      //             .then((result) => {
-      //               if (result) {
-      //                 User.updateOne({ _id: userId }, { $set: { verified: true } })
-      //                   .then(() => {
-      //                     EmailVerification.deleteMany({ userId })
-      //                       .then(() => {
-      //                         req.flash(
-      //                           "success",
-      //                           "Your email has been verified.Go and Login now !"
-      //                         );
-      
-      //                         res.redirect('/login');
-      //                       })
-      //                       .catch((error) => {
-      //                         console.log(error);
-      //                       });
-      //                   })
-      //                   .catch((error) => {
-      //                     console.log(error);
-      //                   });
-      //               } else {
-      //                 req.flash(
-      //                   "error",
-      //                   `Verification link is not valid.Signup again.`
-      //                 );
-      
-      //                 res.redirect('/register');
-      //               }
-      //             })
-      //             .catch((error) => {
-      //               console.log(error);
-      //             });
-      //         }
-      //       } else {
-      //         req.flash("error", `No registered User found`);
-      
-      //         res.redirect('/register');
-      //       }
-      //     })
-      //     .catch((error) => {
-      //       console.log(error);
-      //       console.log("error in find");
-      //     });
-   // });
-
-
-
-      // return userData;
-      
-    
-    // } catch (error) {
-    //   console.log("Error signing up:", error);
-    //   res.render("user/register", { message: "Error signing up",layout:"./layouts/loginLayout" });
-    // }
-  //},
-
-  loginPage: async (req, res) => {
-  try {
-    const error = req.flash("error");
-     // const success = req.flash("success");
-      res.render("user/login", { message: error, layout:"./layouts/loginLayout" });
-  } catch (err) {
-    console.log(err);
-  }
-    
-    // try {
-    //   res.render("user/login", { error: error, success: success,layout:"./layouts/loginLayout" });
-    //  // res.render('user/login',{layout:"./layouts/loginLayout"})
-      
-    // } catch (error) {
-    //   console.log(error.message);
-    // }
-    
-  },
-
-      
-        //login form post
-        postLogin: async (req, res) => {
+//login form post
+ postLogin: async (req, res) => {
           try {
           const email=req.body.email;
           const password=req.body.password;
@@ -288,9 +192,13 @@ module.exports={
               //return res.redirect("/login");
              res.render('user/login',{message:"Please verify your email ",layout:"./layouts/loginLayout"})
            }else{
+            req.session.loggedIn=false;
             req.session.user=userData
-            req.session.loggedIn=true;
-              res.redirect('/home')
+            if(userData){
+              req.session.loggedIn=true;
+            }
+            
+              res.redirect('/')
            } 
           }
            else {
@@ -326,24 +234,43 @@ module.exports={
       
         logout: async (req, res) => {
           req.session.destroy((err) => {
-            if (err) {
+            if (err) { 
               console.log("Error logging out:", err);
             }
-            res.redirect("/login");
+            res.redirect("/");
           });
         },
         loadHome:async(req,res)=>{
-          const user=req.session.user;
-          console.log("hi",user);
+          const user=req.session.user
+          //const user=req.session.loggedIn;
+          // if(req.session.loggedIn)
+          // console.log(req.session.user);
+          // //const user=req.session.user;
+          // req.session.loggedIn=true;
+         
           try {    
-          // const products=await Product.find()   
-          
-            res.render('user/home',{username:user.name,layout:"./layouts/userLayout"})
-             // res.render('user/home',{layout:"./layouts/userLayout"});
+           const categories=await Category.find()   
+          Product.countDocuments()
+            .then((c) => {
+             count = c;
+                })
+                .catch((err) => {
+        // Handle error
+            console.error("Error fetching count:", err);
+            });
+           
+            const products= await Product.find({isDeleted:false}).sort({ createdAt: -1 }).populate('category');
+            if(user){
+            res.render('user/home',{username:user.name,categories,products,layout:"./layouts/userLayout"})
+            }else{
+                  res.render('user/home',{categories,products,user,layout:"./layouts/userLayout"});
+            }
+            
               } catch (error) {
             console.log(error.message);
           }
         },
+   
         otpVerify:async (req,res)=>{
           const user=req.session.user;
           
@@ -363,7 +290,14 @@ module.exports={
         cartPage:async (req,res)=>{
           const user=req.session.user
           try {
-            res.render('user/cart',{username:user.name,layout:"./layouts/userLayout"});
+            const cartItems={
+              name:"abc",
+              description:"dsdsa",
+              quantity:"123",
+              proce:"333"
+
+            }
+            res.render('user/cart',{user:user.name,cartItems,layout:"./layouts/userLayout"});
           } catch (error) {
             console.log(error.message);
           }
@@ -372,10 +306,52 @@ module.exports={
         getProductList:async(req,res)=>{
           const user=req.session.user
           try {
-            res.render("user/product",{username:user.name,layout:"./layouts/userLayout"})
+            const categories=await Category.find()   
+            Product.countDocuments()
+            .then((c) => {
+             count = c;
+                })
+                .catch((err) => {
+        // Handle error
+            console.error("Error fetching count:", err);
+            });
+           
+            const products= await Product.find({isDeleted:false}).sort({ createdAt: -1 }).populate('category');
+            res.render("user/product",{username:user.name,categories,products,layout:"./layouts/userLayout"})
           } catch (error) {
             console.error(error);
+            res.status(500).render('pages/500');
           }
+        },
+
+        // postAddtoCart:async(req,res)=>{
+         
+        //     try {
+        //       const { productId, quantity } = req.body;
+        //       console.log("pId , quantity :",productId,quantity);
+        //       // Check if the product is already in the cart
+        //       let cartItem = await CartItem.findOne({ product: productId });
+          
+        //       if (cartItem) {
+        //         // If it exists, update the quantity
+        //         cartItem.quantity += quantity;
+        //         await cartItem.save();
+        //       } else {
+        //         // If it doesn't exist, create a new cart item
+        //         cartItem = new CartItem({ product: productId, quantity });
+        //         await cartItem.save();
+        //       }
+          
+        //       res.status(200).json({ message: 'Product added to cart' });
+        //     } catch (error) {
+        //       console.error(error);
+        //       res.status(500).json({ error: 'Internal server error' });
+        //     }
+        // },
+        getAddToCart:async (req,res)=>{
+          const userId=req.session.user._id;
+          const productId=req.params.id;
+
         }
       
 
