@@ -15,7 +15,7 @@
             class="img-fluid" alt="Sample image">
         </div>
         <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-          <form method="post" action="/OTP">
+          <form method="post" action="/verifyOtp">
             <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
               <h1 class=" mb-0 me-3">Enter OTP</h1>
             </div>
@@ -40,12 +40,32 @@
   
           </form>
           <div class="text-center text-lg-start mt-4 pt-2">
-            <form method="POST" action="/resend-otp">
+            <form method="POST" action="/resendOTPVerificationCode">
               <input type="hidden" name="email" value='<%= formData.email %>'>
-              <button type="submit" class="btn btn-info btn-lg" style="padding-left: 1.5rem; padding-right: 1.5rem;">Resend OTP</button>
+              <button type="submit" class="btn btn-info btn-lg" style="padding-left: 1.5rem; padding-right: 1.5rem; display: none;" id="resendOTP" >Resend OTP</button>
+              <p id="otpTimer"></p>
             </form>
           </div>
         </div>
       </div>
     </div>
   </section>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script>
+    var initialTimer=1000;
+    const intervalID = setInterval(()=>{
+                  document.getElementById("otpTimer").innerHTML="0:"+Math.floor(initialTimer/1000).toString().padStart(2,'0');
+                  initialTimer=initialTimer+1000;
+                  if(initialTimer===60000){
+                    stop();
+                    document.getElementById("otpTimer").style.display="none";
+                    document.getElementById("resendOTP").style.display="block";
+                    
+                  }
+    }, 1000);
+    // Function to stop setInterval call
+    function stop(){
+        clearInterval(intervalID);
+    }
+  </script>

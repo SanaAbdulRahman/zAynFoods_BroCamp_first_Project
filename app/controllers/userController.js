@@ -9,7 +9,8 @@ const Category=require('../models/categoryModel')
 const CartItem=require('../models/cartModel');
 const {AUTH_EMAIL,AUTH_PASS,HOST_SMTP,HOST_PORT}=process.env
 
-//Nodemailerr stuff
+
+//Nodemailer stuff
 let transporter=nodemailer.createTransport({
   host: HOST_SMTP,
   port: HOST_PORT,
@@ -33,6 +34,13 @@ transporter.verify((error,success)=>{
       console.log(success);
   }
   });
+const resendOTP=async(req,res)=>{
+  if(!req.session.user){
+    throw new Error("User does not exist!");
+  }
+  const user=req.session.user;
+  await sendOTPVerificationEmail(user._id,user.email);
+}
 
   const sendOTPVerificationEmail=async({_id,email},res)=>{
     try {
@@ -54,7 +62,7 @@ transporter.verify((error,success)=>{
         userId:_id,
         otp:hashedOTP,
         createdAt:Date.now(),
-        expiresAt:Date.now() + 3600000
+        expiresAt:Date.now() + 60000
       });
       //save otp record
       await newOTPVerification.save();
@@ -139,27 +147,134 @@ insertUser: async (req, res) => {
                 //Handle account verification
                 //sendVerificationEmail(result,res);
                 sendOTPVerificationEmail(result,res);
-                req.session.flashData = {
-                  message: {
-                    type: "success",
-                    body: "Verify Email",
-                  },
-                  errors: {},
-                  formData: req.body,
-                };
-                req.session.userid = newUser._id.toString();
-                return res.render("user/OTP",{message: {
-                  type: "success",
-                  body: "Verify Email",
-                },formData: req.body,layout:"./layouts/loginLayout"});
-                //res.redirect('/OTP')
+                // req.session.flashData = {
+                //   message: {
+                //     type: "success",
+                //     body: "Verify Email",
+                //   },
+                //   errors: {},
+                //   formData: req.body,
+                // };
+               req.session.user=newUser;
+               req.session.loggedIn=true;
+                // req.session.userid = newUser._id.toString();
+               // return 
+                res.redirect('/OTP')
               })
                 // req.session.user=userData;
                 //   res.redirect('/')
               },
 //GET OTP Page
 getOTPPage: (req,res)=>{
-  res.render("user/OTP",{layout:"./layouts/loginLayout"});
+    if (req.session.user) {
+      res.render("user/OTP",{message: {
+        type: "success",
+        body: "Verify Email",
+      },formData: req.body,layout:"./layouts/loginLayout"});
+      //res.render("user/OTP",{layout:'./layouts/loginLayout'});
+    } else {
+      res.redirect("/register");
+    }
+  },
+  
+//POST (submit otp)
+verifyOTP:async (req,res)=>{
+  try {
+    const otp=req.body.otp;
+    //let {userId,otp}=req.body;
+    const user=req.session.user
+    console.log("OTP and userId :", otp,user);
+    if(!user || !otp){
+      throw Error("Empty otp details are not allowed!");
+    }else{
+      const UserOTPVerificationRecords= await UserOTPVerification.find({userId:user._id})
+      console.log("Records :" , UserOTPVerificationRecords);
+      if(UserOTPVerificationRecords.length<=0){
+        //no record found
+        //throw new Error("Account record doesn't exist or has been verified already. Please sign up or login");
+        res.render("user/OTP",{message: {
+          type: "Error",
+          body: "Account record doesn't exist or has been verified already. Please resend OTP",
+        },formData:req.session.user,layout:"./layouts/loginLayout"});
+      }else{
+        //user otp reord exists
+        const {expiresAt}=UserOTPVerificationRecords[0];
+        console.log(expiresAt);
+        const hashedOTP=UserOTPVerificationRecords[0].otp;
+
+        if(expiresAt < Date.now()){
+          //user otp record has expired
+           await UserOTPVerification.deleteMany({userId:user._id})
+           //throw new Error("Code has expired. Please request again.")
+           res.render("user/OTP",{message: {
+            type: "Error",
+            body: "OTP Expired",
+          },formData:req.session.user,layout:"./layouts/loginLayout"});
+
+        }else{
+         const validOTP= await bcrypt.compare(otp,hashedOTP);
+         if(!validOTP){
+           //supplied otp is wrong 
+           //throw new Error("Invalid code passed. Check your inbox.")
+           res.render("user/OTP",{message: {
+              type: "Error",
+              body: "Invalid OTP",
+            },formData:req.session.user,layout:"./layouts/loginLayout"});
+            
+         }else{
+          //success
+          await User.updateOne({userId:user._Id},{isVerified:true});
+          await UserOTPVerification.deleteMany({userId:user._id})
+          res.redirect("/cart")
+          // res.render("user/cart",{message: {
+          //   type: "success",
+          //   body: "Your Email is verified. Now you can access your cart",
+          // },layout:"./layouts/loginLayout"});
+          // res.json({
+          //   status:"VERIFIED",
+          //   message:`User email verified successfully.`,
+          // })
+
+         }
+        }
+      }
+    }
+  } catch (error) {
+    res.json({
+      status:"FAILED",
+      message:error.message,
+    })
+  }
+
+},
+
+//POST resend OTP
+resendOTPVerificationCode:async (req,res)=>{
+                          try {
+                            const user=req.session.user
+                            console.log("user :",user);
+                            //let email=req.body;
+                            if(!user._id || !user.email){
+                              throw Error("Empty user details are not allowed");
+                            }else{
+                              //delete existing records and resend
+                              await UserOTPVerification.deleteMany({userId:user._id});
+                              sendOTPVerificationEmail({_id:user._id,email:user.email},res);
+                              req.session.flashData = {
+                                message: {
+                                  type: 'success',
+                                  body: 'OTP has been resent'
+                                }
+                              };
+                          
+                              res.redirect('/OTP');
+                            }
+                          } catch (error) {
+                            res.json({
+                              status:"FAILED",
+                              message:error.message, 
+                            })
+                          }
 },
 // GET login page
 loginPage: async (req, res) => {
@@ -271,23 +386,8 @@ loginPage: async (req, res) => {
           }
         },
    
-        otpVerify:async (req,res)=>{
-          const user=req.session.user;
-          
-          
-          try {
-            res.render('user/OTP',{username:user.name,layout:"./layouts/otpLayout"});
-          } catch (error) {
-            console.log(error.message);
-          }
-          // console.log("Verify:",user);
-          // if(user){
-          // res.render("user/OTP",{layout:"./layouts/loginLayout"});
-          // }else{
-          //   res.redirect('/log')
-          // }
-        },
-        cartPage:async (req,res)=>{
+
+cartPage:async (req,res)=>{
           const user=req.session.user
           try {
             const cartItems={
@@ -297,7 +397,7 @@ loginPage: async (req, res) => {
               proce:"333"
 
             }
-            res.render('user/cart',{user:user.name,cartItems,layout:"./layouts/userLayout"});
+            res.render('user/cart',{cartItems,layout:"./layouts/userLayout"});
           } catch (error) {
             console.log(error.message);
           }

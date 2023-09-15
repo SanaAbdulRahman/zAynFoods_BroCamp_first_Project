@@ -15,17 +15,17 @@ router.post('/register',userController.insertUser);
 router.get('/login',userController.loginPage)
 router.post('/login',userController.postLogin)
 router.get('/cart',auth.verifyLogin,userController.cartPage);
-//router.get('/verify',userRegister.verify);
+
 
 router.get('/OTP',userController.getOTPPage);
- //router.post('/send-otp',userRegister.requestOtp);
+ 
+ router.post('/verifyOtp',userController.verifyOTP);
 
- //router.get('/verifyOtp',userRegister.verifyOtp)
-// router.post('/verifyOtp',userRegister.insertOtp);
+ router.post('/resendOTPVerificationCode',userController.resendOTPVerificationCode)
+ //router.post('/resendOTP',userController.resendOTPVerificationCode)
 
-//router.get('/OTP',userRegister.otpVerify);
 router.get('/',userController.loadHome);
-router.get('/logout',auth.verifyLogin,userController.logout);
+router.get('/logout',userController.logout);
 router.get('/product',userController.getProductList);
 //router.get('/add-to-cart/:id',auth.verifyLogin,userController.getAddToCart);
 module.exports = router;

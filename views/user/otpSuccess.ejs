@@ -1,0 +1,15 @@
+<h1>Hii.. your email is verified successfully! </h1>
+
+<div class="col-md-9 col-lg-6 col-xl-5">
+    <% if (message.type) { %>
+    
+      <div
+        class="alert alert-<%= message.type === 'success' ?'success' : 'danger' %>"
+        role="alert"
+      >
+        <%= message.body %>
+      </div>
+      <% } %>
+    <!-- <img src="/assetsimages/loader.gif"
+      class="img-fluid" alt="Sample image"> -->
+  </div>
