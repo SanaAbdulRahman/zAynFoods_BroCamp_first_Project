@@ -54,6 +54,9 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    token:{
+      type:String
+    },
     address: [addressSchema],
     make: { type: String },
     model: { type: String },

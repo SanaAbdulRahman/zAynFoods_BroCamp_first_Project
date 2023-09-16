@@ -7,6 +7,8 @@ const nodemailer=require('nodemailer');
 const Product=require('../models/productModel');
 const Category=require('../models/categoryModel')
 const CartItem=require('../models/cartModel');
+const crypto=require('crypto');
+const randomstring=require('randomstring');
 const {AUTH_EMAIL,AUTH_PASS,HOST_SMTP,HOST_PORT}=process.env
 
 
@@ -84,6 +86,55 @@ const resendOTP=async(req,res)=>{
       // })
     }
   }
+
+
+
+  const sendResetPasswordEmail=async(name,email,token)=>{
+    try {
+      // const otp=`${Math.floor(1000 + Math.random() * 9000)}`;
+      // console.log("OTP :", otp);
+      //mail options
+      const mailOptions={
+        from : AUTH_EMAIL,
+        to : email,
+        subject:"Reset password",
+        html:'<p>Hi '+name+', Please click here to <a href="http://localhost:5000/reset-password?token='+token+'"> Reset </a> your password.</p>'
+
+        // html:`<p>Enter <b> ${otp} </b> in the app to verify your email address and complete the sign up</p>`
+        // <p>This code <b> expires in 1 hour </b>.</p>
+      };
+      //hash the otp
+      // const saltRounds=10;
+
+      // const hashedOTP=await bcrypt.hash(otp,saltRounds);
+      // const newOTPVerification= await new UserOTPVerification({
+      //   userId:_id,
+      //   otp:hashedOTP,
+      //   createdAt:Date.now(),
+      //   expiresAt:Date.now() + 60000
+      // });
+      //save otp record
+     // await newOTPVerification.save();
+      await transporter.sendMail(mailOptions);
+     
+      // res.json({
+      //   status:"PENDING",
+      //   message:"Verification otp email sent",
+      //   data:{
+      //     userId:_id,
+      //     email,
+      //   },
+      // });
+    } catch (error) {
+      console.log(error);
+      res.render('pages/500',{layout:"./layouts/loginLayout"});
+      // res.json({
+      //   status:"FAILED",
+      //   message:error.message,
+      // })
+    }
+  }
+
   // const sendEmail=async(mailOptions)=>{
   //     try {
   //         await transporter.sendMail(mailOptions)
@@ -92,7 +143,9 @@ const resendOTP=async(req,res)=>{
   //         throw error;
   //     }
   // };
-
+  function generateUniqueToken(length = 32) {
+    return crypto.randomBytes(length).toString('hex');
+  }
 module.exports={
 //GET Register form
 registerForm:async (req,res)=>{
@@ -143,10 +196,12 @@ insertUser: async (req, res) => {
                 })
                 //const userData=await newUser.save()
               // req.session.userId=userData._id;
-              newUser.save().then((result)=>{
+             newUser.save().then((result)=>{
                 //Handle account verification
                 //sendVerificationEmail(result,res);
-                sendOTPVerificationEmail(result,res);
+               // sendOTPVerificationEmail({_id:user._id,email:user.email},res);
+                console.log("Result",result);
+                sendOTPVerificationEmail({_id:result._id,email:result.email},res);
                 // req.session.flashData = {
                 //   message: {
                 //     type: "success",
@@ -176,77 +231,84 @@ getOTPPage: (req,res)=>{
       res.redirect("/register");
     }
   },
-  
-//POST (submit otp)
-verifyOTP:async (req,res)=>{
-  try {
-    const otp=req.body.otp;
-    //let {userId,otp}=req.body;
-    const user=req.session.user
-    console.log("OTP and userId :", otp,user);
-    if(!user || !otp){
-      throw Error("Empty otp details are not allowed!");
-    }else{
-      const UserOTPVerificationRecords= await UserOTPVerification.find({userId:user._id})
-      console.log("Records :" , UserOTPVerificationRecords);
-      if(UserOTPVerificationRecords.length<=0){
-        //no record found
-        //throw new Error("Account record doesn't exist or has been verified already. Please sign up or login");
-        res.render("user/OTP",{message: {
-          type: "Error",
-          body: "Account record doesn't exist or has been verified already. Please resend OTP",
-        },formData:req.session.user,layout:"./layouts/loginLayout"});
+
+
+  verifyOTP:async (req,res)=>{
+    try {
+      const otp=req.body.otp;
+      //let {userId,otp}=req.body;
+      const user=req.session.user
+      console.log("OTP and userId :", otp,user);
+      if(!user || !otp){
+        throw Error("Empty otp details are not allowed!");
       }else{
-        //user otp reord exists
-        const {expiresAt}=UserOTPVerificationRecords[0];
-        console.log(expiresAt);
-        const hashedOTP=UserOTPVerificationRecords[0].otp;
-
-        if(expiresAt < Date.now()){
-          //user otp record has expired
-           await UserOTPVerification.deleteMany({userId:user._id})
-           //throw new Error("Code has expired. Please request again.")
-           res.render("user/OTP",{message: {
+        const UserOTPVerificationRecords= await UserOTPVerification.find({userId:user._id})
+        console.log("Records :" , UserOTPVerificationRecords);
+        if(UserOTPVerificationRecords.length<=0){
+          //no record found
+          //throw new Error("Account record doesn't exist or has been verified already. Please sign up or login");
+          res.render("user/OTP",{message: {
             type: "Error",
-            body: "OTP Expired",
+            body: "Account record doesn't exist or has been verified already. Please resend OTP",
           },formData:req.session.user,layout:"./layouts/loginLayout"});
-
         }else{
-         const validOTP= await bcrypt.compare(otp,hashedOTP);
-         if(!validOTP){
-           //supplied otp is wrong 
-           //throw new Error("Invalid code passed. Check your inbox.")
-           res.render("user/OTP",{message: {
+          //user otp reord exists
+          const {expiresAt}=UserOTPVerificationRecords[0];
+          console.log(expiresAt);
+          const hashedOTP=UserOTPVerificationRecords[0].otp;
+  
+          if(expiresAt < Date.now()){
+            //user otp record has expired
+             await UserOTPVerification.deleteMany({userId:user._id})
+             //throw new Error("Code has expired. Please request again.")
+             res.render("user/OTP",{message: {
               type: "Error",
-              body: "Invalid OTP",
+              body: "OTP Expired",
             },formData:req.session.user,layout:"./layouts/loginLayout"});
-            
-         }else{
-          //success
-          await User.updateOne({userId:user._Id},{isVerified:true});
-          await UserOTPVerification.deleteMany({userId:user._id})
-          res.redirect("/cart")
-          // res.render("user/cart",{message: {
-          //   type: "success",
-          //   body: "Your Email is verified. Now you can access your cart",
-          // },layout:"./layouts/loginLayout"});
-          // res.json({
-          //   status:"VERIFIED",
-          //   message:`User email verified successfully.`,
-          // })
-
-         }
+  
+          }else{
+           const validOTP= await bcrypt.compare(otp,hashedOTP);
+           if(!validOTP){
+             //supplied otp is wrong 
+             //throw new Error("Invalid code passed. Check your inbox.")
+             res.render("user/OTP",{message: {
+                type: "Error",
+                body: "Invalid OTP",
+              },formData:req.session.user,layout:"./layouts/loginLayout"});
+              
+           }else{
+            //success
+            await User.updateOne({ _id: user._id }, { isVerified: true });
+            //await User.updateOne({userId:user._Id},{isVerified:true});
+            await UserOTPVerification.deleteMany({userId:user._id})
+            res.redirect("/cart")
+            // res.render("user/cart",{message: {
+            //   type: "success",
+            //   body: "Your Email is verified. Now you can access your cart",
+            // },layout:"./layouts/loginLayout"});
+            // res.json({
+            //   status:"VERIFIED",
+            //   message:`User email verified successfully.`,
+            // })
+  
+           }
+          }
         }
       }
+    } catch (error) {
+      res.json({
+        status:"FAILED",
+        message:error.message,
+      })
     }
-  } catch (error) {
-    res.json({
-      status:"FAILED",
-      message:error.message,
-    })
-  }
+  
+  },
+  
 
-},
+
+  
+//POST (submit otp)
+
 
 //POST resend OTP
 resendOTPVerificationCode:async (req,res)=>{
@@ -280,8 +342,8 @@ resendOTPVerificationCode:async (req,res)=>{
 loginPage: async (req, res) => {
             try {
             const error = req.flash("error");
-            // const success = req.flash("success");
-              res.render("user/login", { message: error, layout:"./layouts/loginLayout" });
+           // const success = req.flash('success');
+              res.render("user/login", { message: error,successMessage: req.flash('success'), layout:"./layouts/loginLayout" });
           } catch (err) {
             console.log(err);
           }  
@@ -344,9 +406,109 @@ loginPage: async (req, res) => {
         // console.log("POstLogin",  req.session.user );
         //   res.redirect("/OTP");
         },
-      
-        
-      
+getForgotPassword:(req,res)=>{
+          res.render('user/forgot-password',{successMessage: req.flash('success'),
+          errorMessage: req.flash('error'),layout:"./layouts/loginLayout"});
+},
+
+postForgotPassword:async (req,res)=>{
+  try {
+    const email = req.body.email;
+
+    // Generate a unique reset token and save it in the database
+    const token = generateUniqueToken();
+    console.log('Generated Token:', token);
+    const user = await User.findOneAndUpdate(
+      { email:email },
+      { $set: { token:token} }, // Set expiration to 1 hour from now
+      { new: true }
+    );
+
+    if (!user) {
+      req.flash('error', 'No user found with this email.');
+      return res.redirect('/forgot-password');
+    }
+
+    // Send a password reset email
+      const resetLink = `${req.protocol}://${req.get('host')}/reset-password/${token}`;
+    
+
+    const mailOptions = {
+      from: AUTH_EMAIL,
+      to: email,
+      subject: 'Password Reset',
+      html: `<p>Click the following link to reset your password:</p><a href="${resetLink}">${resetLink}</a>`
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    req.flash('success', 'Password reset instructions have been sent to your email.');
+    console.log("Email sent");
+    res.redirect('/forgot-password');
+  } catch (error) {
+    console.error(error);
+    req.flash('error', 'An error occurred. Please try again later.');
+    console.log(Error);
+   // res.redirect('/forgot-password');
+  }
+},   
+getResetPassword:async(req,res)=>{
+  try {
+    const token=req.params.token;
+                                                                   
+    //check if the reset token is valid and not expired
+    const user=await User.findOne({
+      token:token,
+      })
+    
+    if(!user){
+      req.flash('error','Invalid or expired reset Token.');
+      return res.redirect('/forgot-password');
+    }else{
+      res.render('user/reset-password',{user_id:user._id,token:user.token,layout:"./layouts/loginLayout"})
+    }
+   
+  } catch (error) {
+    console.log(error);
+    //req.flash('error', 'An error occured. Please try again')
+    //req.redirect('/forgot-password');
+    res.render('pages/404',{layout:"./layouts/loginLayout"})
+  }
+},
+postResetPassword:async(req,res)=>{
+  try {
+    const newPassword=req.body.password;
+    const user_id=req.body.user_id;
+    
+   
+
+  //check if the reset token is valid and not expired
+
+  const user=await User.findOne({_id:user_id})
+
+
+
+  if(!user){
+    req.flash('error','Invalid or expired reset Token.');
+    return res.redirect('/forgot-password');
+  }
+
+  //Update the user's password and remove the reset token
+  const saltRounds=10;
+  const hashedPassword=await bcrypt.hash(newPassword,saltRounds);
+  await User.findByIdAndUpdate({_id:user_id},{
+    $set:{password:hashedPassword,token:undefined}
+  })
+
+  req.flash('success','Password reset succesful. You can now login with your new password.');
+  res.redirect('/login');
+  } catch (error) {
+    console.log(error);
+    req.flash('error','An error occured. Please try again');
+    res.redirect('/forgot-password')
+  }
+},
+    
         logout: async (req, res) => {
           req.session.destroy((err) => {
             if (err) { 
@@ -397,7 +559,7 @@ cartPage:async (req,res)=>{
               proce:"333"
 
             }
-            res.render('user/cart',{cartItems,layout:"./layouts/userLayout"});
+            res.render('user/cart',{username:user.name,cartItems,layout:"./layouts/userLayout"});
           } catch (error) {
             console.log(error.message);
           }

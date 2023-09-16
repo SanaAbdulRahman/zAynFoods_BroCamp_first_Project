@@ -6,9 +6,18 @@
 		<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5z1j4fLB5vtHtqFP5ukPMpP0W9TGNNCKPXBYy2NDlOd8ZA7gNO8rI8fFZFbww4vRFxNg&usqp=CAU" alt="">
 	</div>
 	
-	<% if (typeof message !== 'undefined') { %>
-		<p style="color: orange;"><%= message %></p>
-	   <% } %>
+	<% if (message && message.length > 0) { %>
+		<div class="alert-danger">
+		  <%= message %>
+		</div>
+	  <% } %>
+	  
+	  <% if (successMessage && successMessage.length > 0) { %>
+		<div class="alert-success">
+		  <%= successMessage %>
+		</div>
+	  <% } %>
+	  
       
       
 	
@@ -41,7 +50,7 @@
 		<button type="submit" class="btn mt-3">Login</button>
 	</form>
 	<div class="text-center fs-6">
-		<a href="#">Forget password?</a> or <a href="/register">Sign up</a>
+		<a href="/forgot-password">Forget password?</a> or <a href="/register">Sign up</a>
 	</div>
 </div>
 

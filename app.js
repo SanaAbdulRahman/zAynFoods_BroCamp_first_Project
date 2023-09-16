@@ -18,6 +18,8 @@ app.use(flash())
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// Use the express-flash middleware
+app.use(flash());
 
 //session store
 

@@ -14,7 +14,15 @@ router.post('/register',userController.insertUser);
 
 router.get('/login',userController.loginPage)
 router.post('/login',userController.postLogin)
-router.get('/cart',auth.verifyLogin,userController.cartPage);
+
+router.get('/forgot-password',userController.getForgotPassword);
+router.post('/forgot-password',userController.postForgotPassword);
+
+router.get('/reset-password/:token',userController.getResetPassword);
+router.post('/reset-password/:token',userController.postResetPassword);
+
+ 
+router.get('/cart',userController.cartPage);
 
 
 router.get('/OTP',userController.getOTPPage);
