@@ -5,7 +5,7 @@ const addressSchema = new mongoose.Schema({
     type:mongoose.Schema.Types.ObjectId,
     ref:'User'
   },
-  details:{
+  details:[{
     city:{
     type:String,
     default:"Qusais 5"
@@ -26,7 +26,7 @@ const addressSchema = new mongoose.Schema({
     landmark:  {
         type:String
     }
-    }
+    }]
 })
    
 
