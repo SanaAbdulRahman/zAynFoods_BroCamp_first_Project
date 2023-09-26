@@ -5,24 +5,46 @@
   }
 </style>
 
-<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+
+<!-- <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"> -->
+<!-- <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script> -->
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <!------ Include the above in your HEAD tag ---------->
-<div class="container-fluid">
-<form class="form-horizontal" action="/admin/add-product" method="post" enctype="multipart/form-data">
-<fieldset>
 
+<div class="col-md-6 offset-md-3 mt-5 container-fluid">
   <a href="productList" class="btn btn-primary center">Back to Product List</a>
   <br>
   <br>
+<!-- <div class="container-fluid"> -->
+<form class="form-horizontal" action="/admin/add-product" method="post" enctype="multipart/form-data">
+<fieldset>
+
+  
 <!-- Form Name -->
 <legend>PRODUCTS</legend>
 
-<!-- Text input-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="product_categorie">SELECT A CATEGORY</label>
-  <div class="col-md-4">
+
+<div class="form-group">
+  <label class="control-label" for="exampleFormControlSelect1">Category Name</label>
+  <select
+    class="form-control"
+    id="product_categories"
+    name="category"
+    required="required"
+  >
+    <option value="" disabled selected>SELECT A CATEGORY</option>
+
+    <% categories.forEach(category =>{%>
+      <option value="<%=category._id%>"><%=category.name%></option>
+      <%});%>
+  </select>
+</div>
+<!-- Text input-->
+<!-- <div class="form-group">
+  <label class="control-label" for="product_categorie">SELECT A CATEGORY</label>
+  <div >
     <select id="product_categories" name="category">
         <option value="" disabled selected>Choose a Category</option>
         <% categories.forEach(category =>{%>
@@ -30,25 +52,84 @@
             <%});%>
     </select>
   </div>
+</div> -->
+
+<div class="form-group">
+  <label for="exampleFormControlSelect1">Dish Name</label>
+ 
+      <input id="product_name" name="name" placeholder="DISH NAME" class="form-control input-md" required="" type="text">
+  
 </div>
 
-<!-- Text input-->
 <div class="form-group">
+  <label for="exampleFormControlSelect1">Description</label>
+  <textarea class="form-control" id="category_description" name="description"></textarea>
+</div>
+<div class="form-group">
+  <label for="exampleFormControlSelect1" class="col-md-4 control-label">TYPE</label>  
+  <div class="col-md-6 ">
+      <div>
+    <input type="radio" name="typeOfDish" value="Veg">
+    <label for="veg">Veg</label>
+  </div>
+  <div >
+<input type="radio" name="typeOfDish" value="Non-Veg">
+<label for="veg">Non-Veg</label>
+</div>
+</div>
+</div>
+
+
+
+
+<div class="form-group">
+  <label for="exampleFormControlSelect1">Price</label>
+ 
+      <input id="product_name" name="price" placeholder="PRICE" class="form-control input-md" required="" type="text">
+  
+</div>
+<div class="form-group">
+  <label for="exampleFormControlSelect1">Percentage Discount(OFFER)</label>
+ 
+      <input id="product_name" name="offer" placeholder="PERCENTAGE DISCOUNT" class="form-control input-md" required="" type="text">
+  
+</div>
+<div class="form-group">
+  <label for="exampleFormControlSelect1">Quantity</label>
+ 
+      <input id="product_name" name="quantity" placeholder="QUANTITY PER PERSON" class="form-control input-md" required="" type="text">
+  
+</div>
+
+<div class="form-group">
+  <label for="formGroupExampleprit">Stock</label>
+  <input id="product_name" name="stock" placeholder="TOTAL STOCK" class="form-control input-md" required="" type="text">
+</div>
+<div class="form-group">
+  <label for="formGroupExampleprit">Rating (Out of 5)</label>  
+  
+  <input id="approuved_by" name="rating"  class="form-control input-md"  type="text">
+
+<hr />
+
+
+<!-- Text input-->
+<!-- <div class="form-group">
   <label class="col-md-4 control-label" for="product_name">DISH NAME</label>  
   <div class="col-md-4">
   <input id="product_name" name="name" placeholder="PRODUCT NAME" class="form-control input-md" required="" type="text">
     
   </div>
-</div>
+</div> -->
 <!-- Textarea -->
-<div class="form-group">
+<!-- <div class="form-group">
     <label class="col-md-4 control-label" for="product_description">DESCRIPTION</label>
     <div class="col-md-4">                     
       <textarea class="form-control" id="category_description" name="description"></textarea>
     </div>
-  </div>
+  </div>-->
 <!-- Text input-->
-<div class="form-group">
+<!-- <div class="form-group">
   <label class="col-md-4 control-label" for="product_weight">TYPE</label>  
   <div class="col-md-2 ">
     <input type="radio" name="typeOfDish" value="Veg">
@@ -66,60 +147,64 @@
     <input id="comment" name="price" class="form-control input-md"  type="text">
       
     </div>
-  </div>
+  </div>-->
 <!-- Text input-->
-<div class="form-group">
+<!-- <div class="form-group">
   <label class="col-md-4 control-label" for="percentage_discount">PERCENTAGE DISCOUNT(OFFER)</label>  
   <div class="col-md-4">
   <input id="percentage_discount" name="offer" placeholder="PERCENTAGE DISCOUNT" class="form-control input-md"  type="text">
     
   </div>
-</div>
+</div>-->
 
-<div class="form-group">
+<!-- <div class="form-group">
   <label class="col-md-4 control-label" for="stock_alert">QUANTITY </label>  
   <div class="col-md-4">
   <input id="stock_alert" name="quantity" placeholder="QUANTITY PER PERSON" class="form-control input-md" required="" type="text">
     
   </div>
-</div>
+</div>-->
 <!-- Text input-->
-<div class="form-group">
+<!--<div class="form-group">
   <label class="col-md-4 control-label" for="stock_alert">STOCK </label>  
   <div class="col-md-4">
   <input id="stock_alert" name="stock" placeholder="TOTAL STOCK " class="form-control input-md" required="" type="text">
     
   </div>
-</div>
+</div>-->
 <!-- Text input-->
-<div class="form-group">
+<!--<div class="form-group">
   <label class="col-md-4 control-label" for="approuved_by">RATING (OUT OF 5)</label>  
   <div class="col-md-4">
   <input id="approuved_by" name="rating"  class="form-control input-md"  type="text">
 </div>
-</div>
+</div> -->
  <!-- File Button --> 
 <div class="form-group">
-  <label class="col-md-4 control-label" for="image">MAIN-IMAGE</label>
+  <label class="mr-2">Upload the Image:</label>
+  <!-- <label class="col-md-4 control-label" for="image">MAIN-IMAGE</label> -->
   <div class="col-md-4">
     <input id="img" name="image" class="input-file" type="file" accept="image/*">
     <img id="previewImage" src="" alt="Image Preview" style="max-width: 100px; display: none;" style="max-width: 100px;">
   </div>
 </div>
 <!-- File Button --> 
-<div class="form-group">
+<!-- <div class="form-group">
   <label class="col-md-4 control-label" for="filebutton">AUXILIARY IMAGES</label>
   <div class="col-md-4">
     <input id="filebutton" name="filebutton" class="input-file" type="file">
     
   </div>
-</div>
+</div> -->
 
 <!-- Button -->
 <div class="form-group">
   <!-- <label class="col-md-4 control-label" for="singlebutton">Single Button</label> -->
   <div class="col-md-4">
+  <!-- <div class="col-md-4"> -->
+    
     <button id="singlebutton" type="submit" name="singlebutton" class="btn btn-primary">Submit</button>
+    <!-- </div> -->
   </div>
   </div>
 

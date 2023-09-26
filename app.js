@@ -14,10 +14,10 @@ const session = require('express-session');
 const MongoStore = require('connect-mongodb-session')(session);
 const expressLayouts=require('express-ejs-layouts');
 
-app.use(flash())
 
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 // Use the express-flash middleware
 app.use(flash());
 
@@ -37,11 +37,16 @@ app.use(session({secret:process.env.COOKIE_SECRET,
      cookie: { maxAge:1000 * 60 * 60 *24 },  //24 hours
     store: store
 }))
-
+//Global middleware
 app.use((req,res,next)=>{
+    res.locals.session=req.session;
     res.locals.user=req.session.user;
-    next();
-});
+    next(); 
+})
+// app.use((req,res,next)=>{
+//     res.locals.user=req.session.user;
+//     next();
+// });
 const adminRouter=require('./routes/adminRouter');
 const userRouter=require('./routes/userRouter');
 // app.use(bodyParser.json());

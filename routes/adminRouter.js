@@ -23,6 +23,7 @@ const upload=multer({storage:storage});
 router.get('/adminlogin',adminController.adminlogin)
 router.post('/adminVerify',adminController.adminVerify)
 
+router.get('/adminPanel',adminController.adminPanel);
 
 router.get('/dashboard',adminauth.isAdminLogIn,adminController.loadDashboard);
 router.get('/logout',adminauth.isAdminLogIn,adminController.adminlogout)
@@ -31,6 +32,7 @@ router.get('/categoryList',adminauth.isAdminLogIn,adminController.getAllCategori
 router.get('/userList',adminauth.isAdminLogIn,adminController.getAllUsers);
 router.post('/block-user/:id',adminController.blockUser);
 router.post('/unBlock-user/:id',adminController.unBlockUser);
+router.get('/addProduct',adminController.addProductForm);
 router.get('/add-product',adminauth.isAdminLogIn,adminController.addProduct);
 router.post('/add-product', upload.single('image'), async (req, res) => {
     try {

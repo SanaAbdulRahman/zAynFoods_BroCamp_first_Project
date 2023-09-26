@@ -1,6 +1,7 @@
 
 require('dotenv').config();
 const User=require('../models/userModel');
+const Address=require('../models/addressModel');
 const UserOTPVerification=require('../models/userOTPVerificationModel')
 const bcrypt=require('bcrypt');
 const nodemailer=require('nodemailer');
@@ -9,6 +10,7 @@ const Category=require('../models/categoryModel')
 const CartItem=require('../models/cartModel');
 const crypto=require('crypto');
 const randomstring=require('randomstring');
+const { MongoNetworkError } = require('mongodb');
 const {AUTH_EMAIL,AUTH_PASS,HOST_SMTP,HOST_PORT}=process.env
 
 
@@ -281,7 +283,7 @@ getOTPPage: (req,res)=>{
             await User.updateOne({ _id: user._id }, { isVerified: true });
             //await User.updateOne({userId:user._Id},{isVerified:true});
             await UserOTPVerification.deleteMany({userId:user._id})
-            res.redirect("/cart")
+            res.redirect("/login")
             // res.render("user/cart",{message: {
             //   type: "success",
             //   body: "Your Email is verified. Now you can access your cart",
@@ -367,19 +369,25 @@ loginPage: async (req, res) => {
               // );
           
               //return res.redirect("/login");
-             res.render('user/login',{message:"Please verify your email ",layout:"./layouts/loginLayout"})
+             res.render('user/login',{message: error,successMessage: req.flash('success'),layout:"./layouts/loginLayout"})
+
+             //res.render('user/login',{message:"Please verify your email ",layout:"./layouts/loginLayout"})
            }else{
             req.session.loggedIn=false;
             req.session.user=userData
+            res.redirect('/')
             if(userData){
               req.session.loggedIn=true;
             }
             
-              res.redirect('/')
+              // res.redirect('/')
            } 
           }
-           else {
-            res.render('user/login',{message:"Email or password is incorrect",layout:"./layouts/loginLayout"})
+           else
+            {
+            res.render('user/login',{message: error,successMessage: req.flash('success'),layout:"./layouts/loginLayout"})
+
+            // res.render('user/login',{message:"Email or password is incorrect",layout:"./layouts/loginLayout"})
            }
 
           } else {
@@ -509,7 +517,7 @@ postResetPassword:async(req,res)=>{
   }
 },
     
-        logout: async (req, res) => {
+logout: async (req, res) => {
           req.session.destroy((err) => {
             if (err) { 
               console.log("Error logging out:", err);
@@ -517,7 +525,7 @@ postResetPassword:async(req,res)=>{
             res.redirect("/");
           });
         },
-        loadHome:async(req,res)=>{
+loadHome:async(req,res)=>{
           const user=req.session.user
           //const user=req.session.loggedIn;
           // if(req.session.loggedIn)
@@ -552,20 +560,26 @@ postResetPassword:async(req,res)=>{
 cartPage:async (req,res)=>{
           const user=req.session.user
           try {
-            const cartItems={
-              name:"abc",
-              description:"dsdsa",
-              quantity:"123",
-              proce:"333"
+            // const cartItems={
+            //   name:"abc",
+            //   description:"dsdsa",
+            //   quantity:"123",
+            //   proce:"333"
+
+            // }
+            // res.render('user/cart',{username:user.name,cartItems,layout:"./layouts/userLayout"});
+            if(user){
+            res.render('user/cart',{username:user.name,layout:"./layouts/userLayout"});
+            }else{
+            res.render('user/cart',{layout:"./layouts/userLayout"});
 
             }
-            res.render('user/cart',{username:user.name,cartItems,layout:"./layouts/userLayout"});
           } catch (error) {
             console.log(error.message);
           }
          
         },
-        getProductList:async(req,res)=>{
+getProductList:async(req,res)=>{
           const user=req.session.user
           try {
             const categories=await Category.find()   
@@ -610,11 +624,123 @@ cartPage:async (req,res)=>{
         //       res.status(500).json({ error: 'Internal server error' });
         //     }
         // },
-        getAddToCart:async (req,res)=>{
+getAddToCart:async (req,res)=>{
           const userId=req.session.user._id;
           const productId=req.params.id;
 
-        }
-      
+        },
+updateCart:(req,res)=>{
+  if(!req.body._id){
+    throw new Error("Item does not exist!");
+  }
+    //for the first time creatng the cart and adding basic object structure
+    if(!req.session.cart){
+      //console.log(req.session.cart);
+      req.session.cart={
+        items:{},
+        totalQty:0,
+        totalPrice:0
+      }
+    }
+  //let productObject = {};
+  let cart=req.session.cart;
+
+ // let cart=req.session.cart;
+  console.log(req.body);
+   console.log("cartNew :",cart);
+  //console.log("cart",cart.items);
+//check if item does not existin cart
+if(cart.items["undefined"]){
+  delete cart.items["undefined"];
+}
+if(!cart.items[req.body._id]){
+  //console.log("hii");
+    cart.items[req.body._id]={
+      item:req.body,
+      qty:1,
+    }
+    console.log("cart",cart.items);
+    cart.totalQty=cart.totalQty + 1;
+    cart.totalPrice= cart.totalPrice + req.body.price
+    console.log("cart...",cart);
+}else{
+  cart.items[req.body._id].qty=cart.items[req.body._id].qty + 1 ;
+  cart.totalQty=cart.totalQty+1;
+  cart.totalPrice=cart.totalPrice + req.body.price
+
+}
+cart.totalPrice=0;
+Object.values(cart.items).forEach(item=>{
+  console.log("item :",item);
+  cart.totalPrice=cart.totalPrice+(item.item.price * item.qty);
+})
+req.session.cart=cart;
+console.log('response',req.session.cart);
+//res.update('user/cart',{layout: "./layouts/userLayout"});
+return res.json({totalQty:req.session.cart.totalQty});
+},
+
+profilePage:(req,res)=>{
+  const user=req.session.user
+  try {
+    // const cartItems={
+    //   name:"abc",
+    //   description:"dsdsa",
+    //   quantity:"123",
+    //   proce:"333"
+
+    // }
+    // res.render('user/cart',{username:user.name,cartItems,layout:"./layouts/userLayout"});
+    if(user){
+    res.render('user/profile',{username:user.name,layout:"./layouts/userLayout"});
+    }else{
+    res.render('user/profile',{layout:"./layouts/userLayout"});
+
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+},
+
+addAddress:async (req,res)=>{
+  const user=req.session.user;
+  try {
+    // Get user data from the form
+    const userId = user._id
+    console.log("userId :",userId); // Assuming you have the user's ID available in req.user
+    const { name, email, mobile, apartment,building,flat, pincode, landmark } = req.body;
+    console.log("req.body  :",req.body);
+
+    // Create a new address object
+    const newAddress = new Address({
+      userId, // User's ID
+      details: {
+        name:name,
+        email:email,
+        mobile:mobile,
+        apartment:apartment,
+        building:building,
+        flat:flat,
+        pincode:pincode,
+        landmark:landmark,
+      },
+    });
+
+    // Create a new address document in the Address collection
+    const addressDoc = await newAddress.save();
+
+    // const addressDoc = await Address.create(newAddress);
+
+    // Find the user by their ID and push the new address document's ID to their address array
+    await User.findByIdAndUpdate(userId, { $push: { address: addressDoc._id } });
+
+    // Redirect the user to their profile page or any other desired location
+    res.redirect('/'); // Change this URL as needed
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+},
+
 
 }

@@ -1,4 +1,5 @@
 <nav class="app-header navbar navbar-expand bg-body">
+    <!-- <nav class="main-header navbar navbar-expand navbar-dark navbar-light"> -->
     <!--begin::Container-->
     <div class="container-fluid">
         <!--begin::Start Navbar Links-->
@@ -8,35 +9,40 @@
                     <i class="bi bi-list"></i>
                 </a>
             </li>
-            <li class="nav-item d-none d-md-block">
+            
+          
+                <li class="nav-item d-none d-sm-inline-block">
+                  <a href="dashboard" class="nav-link">Home</a>
+                </li>
+                <li>
+                  <form>
+                    <input type="button" class="btn btn-outline-dark text-yellow" value="Go back!" onclick="history.back()">
+                   </form>
+                </li>     
+              </ul>
+            <!-- <li class="nav-item d-none d-md-block">
                 <a href="#" class="nav-link">Home</a>
             </li>
             <li class="nav-item d-none d-md-block">
                 <a href="#" class="nav-link">Contact</a>
-            </li>
-        </ul>
+            </li> -->
+        <!-- </ul> -->
         <!--end::Start Navbar Links-->
 
         <!--begin::End Navbar Links-->
-        <ul class="navbar-nav ms-auto">
-            <!--begin::Navbar Search-->
-            <li class="nav-item">
-                <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-                    <i class="bi bi-search"></i>
-                </a>
-            </li>
+    
             <!--end::Navbar Search-->
 
             <!--begin::Messages Dropdown Menu-->
-            <li class="nav-item dropdown">
+            <!-- <li class="nav-item dropdown">
                 <a class="nav-link" data-bs-toggle="dropdown" href="#">
                     <i class="bi bi-chat-text"></i>
                     <span class="navbar-badge badge text-bg-danger">3</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                    <a href="#" class="dropdown-item">
+                    <a href="#" class="dropdown-item"> -->
                         <!--begin::Message-->
-                        <div class="d-flex">
+                        <!-- <div class="d-flex">
                             <div class="flex-shrink-0">
                                 <img src="/dist/assets/img/user1-128x128.jpg" alt="User Avatar" class="img-size-50 rounded-circle me-3">
                             </div>
@@ -50,13 +56,13 @@
                                     <i class="bi bi-clock-fill me-1"></i> 4 Hours Ago
                                 </p>
                             </div>
-                        </div>
+                        </div> -->
                         <!--end::Message-->
-                    </a>
+                    <!-- </a>
                     <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">
+                    <a href="#" class="dropdown-item"> -->
                         <!--begin::Message-->
-                        <div class="d-flex">
+                        <!-- <div class="d-flex">
                             <div class="flex-shrink-0">
                                 <img src="/dist/assets/img/user8-128x128.jpg" alt="User Avatar" class="img-size-50 rounded-circle me-3">
                             </div>
@@ -72,13 +78,13 @@
                                     <i class="bi bi-clock-fill me-1"></i> 4 Hours Ago
                                 </p>
                             </div>
-                        </div>
+                        </div> -->
                         <!--end::Message-->
-                    </a>
+                    <!-- </a>
                     <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">
+                    <a href="#" class="dropdown-item"> -->
                         <!--begin::Message-->
-                        <div class="d-flex">
+                        <!-- <div class="d-flex">
                             <div class="flex-shrink-0">
                                 <img src="/dist/assets/img/user3-128x128.jpg" alt="User Avatar" class="img-size-50 rounded-circle me-3">
                             </div>
@@ -94,17 +100,17 @@
                                     <i class="bi bi-clock-fill me-1"></i> 4 Hours Ago
                                 </p>
                             </div>
-                        </div>
+                        </div> -->
                         <!--end::Message-->
-                    </a>
+                    <!-- </a>
                     <div class="dropdown-divider"></div>
                     <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
                 </div>
-            </li>
+            </li> -->
             <!--end::Messages Dropdown Menu-->
 
             <!--begin::Notifications Dropdown Menu-->
-            <li class="nav-item dropdown">
+            <!-- <li class="nav-item dropdown">
                 <a class="nav-link" data-bs-toggle="dropdown" href="#">
                     <i class="bi bi-bell-fill"></i>
                     <span class="navbar-badge badge text-bg-warning">15</span>
@@ -131,18 +137,63 @@
                         See All Notifications
                     </a>
                 </div>
-            </li>
+            </li> -->
             <!--end::Notifications Dropdown Menu-->
 
+            <ul class="navbar-nav ml-auto">
+                <span class="d-none d-md-inline mr-2 mt-2"><%= admin %></span>
+                <!-- Messages Dropdown Menu -->
+                <li class="nav-item dropdown mr-4">
+                  <a class="nav-link" data-toggle="dropdown">
+                    <i class="fa fa-users"></i>
+                    <span class="badge navbar-badge"><i class="fa fa-circle text-success"></i></span>
+                  </a>
+                 
+                  <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <a href="/" class="dropdown-item">
+                      <!-- Message Start -->
+                      <div class="media">
+                        <div class="media-body">
+                          <h3 class="dropdown-item-title">
+                            Go Shop
+                            <span class="float-right text-sm text-muted"><i class="fa-solid fa-bag-shopping"></i></span>
+                          </h3>
+                        </div>
+                      </div>
+                      <!-- Message End -->
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="/admin/logout" class="dropdown-item">
+                      <!-- Message Start -->
+                      <div class="media" >
+                        
+                        <div class="media-body">
+                          <h3 class="dropdown-item-title ">
+                            Logout
+                            <span class="float-right text-sm text-danger"><i class="fa-solid fa-person-running"></i></span>
+                          </h3>
+                        </div>
+                      </div>
+                      <!-- Message End -->
+                    </a>
+                </li>
+             
+                <!-- <li class="nav-item">
+                  <a class="nav-link" data-widget="fullscreen" role="button">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                  </a>
+                </li> -->
+              </ul>
+
             <!--begin::User Menu Dropdown-->
-            <li class="nav-item dropdown user-menu">
+            <!-- <li class="nav-item dropdown user-menu">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                     <img src="/dist/assets/img/user2-160x160.jpg" class="user-image rounded-circle shadow" alt="User Image">
                     <span class="d-none d-md-inline"><%= admin %></span>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end"> -->
                     <!--begin::User Image-->
-                    <li class="user-header text-bg-primary">
+                    <!-- <li class="user-header text-bg-primary">
                         <img src="/dist/assets/img/user2-160x160.jpg" class="rounded-circle shadow" alt="User Image">
                         
 
@@ -150,12 +201,12 @@
                             Alexander Pierce - Web Developer
                             <small>Member since Nov. 2023</small>
                         </p>
-                    </li>
+                    </li> -->
                     <!--end::User Image-->
                     <!--begin::Menu Body-->
-                    <li class="user-body">
+                    <!-- <li class="user-body"> -->
                         <!--begin::Row-->
-                        <div class="row">
+                        <!-- <div class="row">
                             <div class="col-4 text-center">
                                 <a href="#">Followers</a>
                             </div>
@@ -165,19 +216,19 @@
                             <div class="col-4 text-center">
                                 <a href="#">Friends</a>
                             </div>
-                        </div>
+                        </div> -->
                         <!--end::Row-->
-                    </li>
+                    <!-- </li> -->
                     <!--end::Menu Body-->
                     <!--begin::Menu Footer-->
-                    <li class="user-footer">
+                    <!-- <li class="user-footer">
                         <a href="#" class="btn btn-default btn-flat">Profile</a>
                        
                         <a href="/admin/logout" class="btn btn-default btn-flat float-end">Sign out</a>
-                    </li>
+                    </li> -->
                     <!--end::Menu Footer-->
-                </ul>
-            </li>
+                <!-- </ul>
+            </li> -->
             <!--end::User Menu Dropdown-->
         </ul>
         <!--end::End Navbar Links-->

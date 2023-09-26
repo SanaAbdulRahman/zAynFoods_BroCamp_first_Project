@@ -1,44 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>zAYn Foods</title>
     <!-- for icons  -->
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
+    />
     <!-- bootstrap  -->
-    <link rel="stylesheet" href="/assetscss/bootstrap.min.css">
+    <link rel="stylesheet" href="/assetscss/bootstrap.min.css" />
     <!-- for swiper slider  -->
-    <link rel="stylesheet" href="/assetscss/swiper-bundle.min.css">
+    <link rel="stylesheet" href="/assetscss/swiper-bundle.min.css" />
 
     <!-- fancy box  -->
-    <link rel="stylesheet" href="/assetscss/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="/assetscss/jquery.fancybox.min.css" />
     <!-- custom css  -->
-    <link rel="stylesheet" href="/css/style.css">
-    <!-- style for cart page -->
-    
-</head>
+    <link rel="stylesheet" href="/css/style.css" />
+    <!-- <link rel="stylesheet" href="/css/notyStyle.css"> -->
 
-<body class="body-fixed">
+    <!-- style for cart page -->
+  </head>
+
+  <body class="body-fixed">
     <!-- start of header  -->
-        
+
     <%- include('../partials/user/user-header.ejs') %>
     <!-- header ends  -->
 
     <div id="viewport">
-        <div id="js-scroll-content">
-        <%- body %>
-        
-        <%- include('../partials/user/user-footer.ejs') %>   
-
-        </div>
+      <div id="js-scroll-content">
+        <%- body %> <%- include('../partials/user/user-footer.ejs') %>
+      </div>
     </div>
-
-
-
-
 
     <!-- jquery  -->
     <script src="/assetsjs/jquery-3.5.1.min.js"></script>
@@ -77,12 +73,11 @@
     <script src="/js/main.js"></script>
 
     <!-- bootstrap cdn for cart page -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src=" https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></script>
-    
-   
-</body>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.5.0/dist/js/bootstrap.min.js"></script> -->
+  </body>
 </html>

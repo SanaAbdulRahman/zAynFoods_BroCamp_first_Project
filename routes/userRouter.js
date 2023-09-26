@@ -23,6 +23,7 @@ router.post('/reset-password/:token',userController.postResetPassword);
 
  
 router.get('/cart',userController.cartPage);
+router.post('/update-cart',userController.updateCart);
 
 
 router.get('/OTP',userController.getOTPPage);
@@ -35,5 +36,8 @@ router.get('/OTP',userController.getOTPPage);
 router.get('/',userController.loadHome);
 router.get('/logout',userController.logout);
 router.get('/product',userController.getProductList);
+
+router.get('/profile',userController.profilePage);
+router.post('/add-address',userController.addAddress)
 //router.get('/add-to-cart/:id',auth.verifyLogin,userController.getAddToCart);
 module.exports = router;

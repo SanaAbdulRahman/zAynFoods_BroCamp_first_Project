@@ -45,6 +45,10 @@ function randomGen(length) {
 
 module.exports={
 
+    adminPanel:(req,res)=>{
+        res.render("admin/adminPanel",{layout:"./layouts/admin"});
+    },
+
 adminlogin: async(req,res)=>{
     try {
         res.render("admin/adminLogin",{layout:"./layouts/loginLayout"})
@@ -88,7 +92,8 @@ adminVerify:async(req,res)=>{
                 if(adminData.isAdmin===true){
                     req.session.admin = { name: adminData.name, _id: adminData._id };
                     console.log(req.session.admin); // Set only necessary data
-                         res.redirect('/admin/productList');
+                        // res.redirect('/admin/productList');
+                        res.redirect('/admin/dashboard')
                 }else{
                     res.render('admin/adminLogin',{message:"The user is not Admin.!",layout:"./layouts/loginLayout"});
                 }
@@ -109,7 +114,9 @@ loadDashboard:async(req,res)=>{
     const admin=req.session.admin;
     try {
         
-            res.render("admin/product",{admin:admin.name,layout:"./layouts/dashboard-layout"});
+            res.render("admin/dashboard",{admin:admin.name,layout:"./layouts/dashboard-layout"});
+          
+            // res.render("admin/product",{admin:admin.name,layout:"./layouts/dashboard-layout"});
           
     } catch (error) {
         console.log(error.message);
@@ -143,7 +150,9 @@ adminlogout: async (req, res) => {
         });
        
         const products= await Product.find({isDeleted:false}).sort({ createdAt: -1 }).populate('category');
-        res.render('admin/product',{admin:admin.name,products,count:count,layout:'./layouts/dashboard-layout'});
+         res.render('admin/product',{admin:admin.name,products,count:count,layout:'./layouts/dashboard-layout'});
+        // res.render('admin/product',{admin:admin.name,products,count:count,layout:'./layouts/admin'});
+
     } catch (error) {
         console.log(error.message);
         res.status(500).send('Internal Server Error');
@@ -574,6 +583,22 @@ restoreDeletedProduct:async (req,res)=>{
         reject(new Error('Invalid file format, only images are supported!'));
       }
     });
+  },
+
+  addProductForm: async (req,res)=>{
+    const admin=req.session.admin;
+    if (!admin) {
+        return res.render('admin-login',{layout:'./layouts/admin-layout'}); // Redirect to your login page
+    }
+
+    try {
+        const categories=await Category.find();
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+
+        res.render('admin/addProduct',{categories,admin:admin.name,layout:'./layouts/admin'});
+    } catch (error) {
+        console.log(error);
+    }
   }
   
 

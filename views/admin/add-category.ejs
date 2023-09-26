@@ -1,10 +1,10 @@
-<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<!-- <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"> -->
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <!------ Include the above in your HEAD tag ---------->
 
 
-
+<div class="col-md-6 offset-md-3 mt-5 container-fluid">
 <form class="form-horizontal" action="/admin/add-category" method="post">
 <fieldset>
   <a href="categoryList" class="btn btn-primary">Back to Category List</a>
@@ -22,12 +22,13 @@
 
 <!-- Text input-->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="product_name">CATEGORY NAME</label>  
-  <div class="col-md-4">
+  <label for="exampleFormControlSelect1">CATEGORY NAME</label>  
+  
   <input id="product_name" name="name" placeholder="CATEGORY NAME" class="form-control input-md" required="" type="text">
     
-  </div>
+  
 </div>
+
 
 <!-- <div class="form-group">
     <label class="col-md-4 control-label" for="product_description">CATEGORY DESCRIPTION</label>
@@ -84,15 +85,20 @@
  <!-- File Button --> 
 
 <!-- File Button --> 
-
+<div class="form-group">
+  
+  <div class="col-md-4">
+    <button  type="submit" name="singlebutton" class="btn btn-primary ml-5">Submit</button>
+  </div>
+  </div>
 
 <!-- Button -->
-<div class="form-group">
+<!-- <div class="form-group">
     <label class="col-md-4 control-label" for="singlebutton"></label>
     <div class="col-md-4">
       <button id="singlebutton" type="submit" name="singlebutton" class="btn btn-primary">Submit</button>
     </div>
-    </div>
+    </div> -->
 <!-- <div class="form-group">
   
   <div class="col-md-4">
@@ -102,3 +108,4 @@
 
 </fieldset>
 </form>
+</div>

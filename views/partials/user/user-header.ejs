@@ -1,61 +1,77 @@
-  <!-- start of header  -->
-  <header class="site-header">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-2">
-                <div class="header-logo">
-                    <a href="index.html">
-                        <img src="/images/logo.png" width="160" height="36" alt="Logo">
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-10">
-                <div class="main-navigation">
-                    <button class="menu-toggle"><span></span><span></span></button>
-                    <nav class="header-menu">
-                        <ul class="menu food-nav-menu">
-                            <li><a href="/">Home</a></li>
-                            <li><a href="/product">Our Dishes</a></li>
-                            <!-- <li><a href="#about">About</a></li> -->
-                            
-                            <li><a href="#gallery">Gallery</a></li>
-                            <!-- <li><a href="#blog">Blog</a></li> -->
-                            <li><a href="#contact">Contact</a></li>
-                        </ul>
-                    </nav>
-                    <div class="header-right">
-                        <form action="#" class="header-search-form for-des">
-                            <input type="search" class="form-input" placeholder="Search Here...">
-                            <button type="submit">
-                                <i class="uil uil-search"></i>
-                            </button>
-                        </form>
-                       
-                        <a href="/cart" class="header-btn header-cart">
-                            <i class="uil uil-shopping-bag"></i>
-                            <span class="cart-number" id="cartCount"></span>
-                        </a>
-                        <%if(user) {%>    
-                            
-                            <div class="header-btn">
-                               
-                           <i class="uil uil-user-md"> </i> 
-                     
-                        </div><%= username %> 
-                
-                </div>
-                    <a href="/logout" class="header-btn">
-                        <i class="uil uil-signout"></i>
-                    </a>
-                    
-                    <% } else { %>
-                         <a href="/login" class="header-btn">
-                            <i class="uil uil-signin"></i> 
-                        </a>
-                            <% } %>
-                </div>
-            </div>
+<!-- start of header  -->
+<header class="site-header">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2">
+        <div class="header-logo">
+          <a href="index.html">
+            <img src="/images/logo.png" width="160" height="36" alt="Logo" />
+          </a>
         </div>
+      </div>
+      <div class="col-lg-10">
+        <div class="main-navigation">
+          <button class="menu-toggle"><span></span><span></span></button>
+          <nav class="header-menu">
+            <ul class="menu food-nav-menu">
+              <li><a href="/">Home</a></li>
+              <li><a href="/product">Our Dishes</a></li>
+              <!-- <li><a href="#about">About</a></li> -->
+
+              <li><a href="#gallery">Gallery</a></li>
+              <!-- <li><a href="#blog">Blog</a></li> -->
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </nav>
+          <div class="header-right">
+            <form action="#" class="header-search-form for-des">
+              <input
+                type="search"
+                class="form-input"
+                placeholder="Search Here..."
+              />
+              <button type="submit">
+                <i class="uil uil-search"></i>
+              </button>
+            </form>
+
+            <a href="/cart" class="header-btn header-cart">
+              <i class="uil uil-shopping-bag"></i>
+              <span class="cart-number" id="cartCounter"
+                ><%=session.cart ? session.cart.totalQty : ''%></span
+              >
+            </a>
+            <%if(user) {%>
+            <div class="header-btn">
+              <a href="/profile"
+                ><i
+                  class="uil uil-user-md"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="bottom"
+                  title="My Profile"
+                ></i
+              ></a>
+            </div>
+            <%= username %>
+          </div>
+          <a href="/logout" class="header-btn">
+            <i class="uil uil-signout"></i>
+          </a>
+
+          <% } else { %>
+          <a href="/login" class="header-btn">
+            <i class="uil uil-signin"></i>
+          </a>
+          <% } %>
+        </div>
+      </div>
     </div>
+  </div>
 </header>
 <!-- header ends  -->
+<script>
+  // Initialize tooltips
+  $(function () {
+    $('[data-bs-toggle="tooltip"]').tooltip();
+  });
+</script>

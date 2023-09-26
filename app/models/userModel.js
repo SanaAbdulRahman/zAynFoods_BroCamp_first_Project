@@ -1,14 +1,28 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
-const addressSchema = mongoose.Schema({
-  
-    name:  {type:String, required:true},
-    house:  {type:String}, 
-    city:  {type:String}, 
-    district:  {type:String}, 
-    pin:  {type:Number}
-
+const addressSchema = new mongoose.Schema({
+  userId:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'User'
+  },
+   details:{ 
+    city:{
+    type:String,
+    default:"Qusais 5"
+   },
+   
+    address:{
+        type:String
+    },
+    pincode:  {
+        type:String
+    }, 
+    landmark:  {
+        type:Number
+    }
+}
+   
 });
 
 const userSchema = mongoose.Schema(
