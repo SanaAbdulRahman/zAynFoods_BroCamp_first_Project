@@ -26,11 +26,50 @@
       </div>
   <!-- <div class="container-fluid"> -->
  
+<!-- Display existing addresses -->
+<div class="text-end"><!-- Button to add a new address -->
+    <button onclick="showNewAddressForm()">Add New Address</button></div>
+<h2>Your Addresses</h2>
+<hr>
+<ul>
+    <% for (const address of userAddresses) { %>
+      <% for (const detail of address.details) { %>
+        <li>
+          <p>City: <%= detail.city %></p>
+          <p>Apartment: <%= detail.apartment %></p>
+          <p>Building: <%= detail.building %></p>
+          <p>Flat: <%= detail.flat %></p>
+          <p>Pincode: <%= detail.pincode %></p>
+          <p>Landmark: <%= detail.landmark %></p>
+            <!-- Edit and Delete Buttons -->
+            <div>
+                <button onclick="editAddress('<%= address._id %>', '<%= detail._id %>')">Edit</button>
+                <button onclick="deleteAddress('<%= address._id %>', '<%= detail._id %>')">Delete</button>
+              </div>
+          <hr>
+        </li>
+      <% } %>
+    <% } %>
+  </ul>
+  
+    <!-- Back to Shopping Button -->
+    <div class="text-end ">
+        <a href="/"><button>Back to shopping</button></a>
+      </div>
+
+
+
+
+
+
+<!-- Form to add a new address (initially hidden) -->
+<div id="newAddressForm" style="display: none;">
+ 
 
   
     
   <!-- Form Name -->
-  <legend>ADD ADDRESS</legend>
+  <legend>ADD NEW ADDRESS</legend>
   <form class="form-horizontal" action="/add-address" method="post" >
   <div class="form-group">
   
@@ -107,9 +146,20 @@
   
 
   </form>
-  
+</div>
   </div>
 </section>
+
+
+
+<script>
+    // Function to show the new address form
+    function showNewAddressForm() {
+      const newAddressForm = document.getElementById('newAddressForm');
+      newAddressForm.style.display = 'block';
+    }
+  </script>
+  
   <!-- <script>
       const categorySelect=document.querySelector('select[name="category"]');
       const categoryDescription=document.querySelector('#category_description');

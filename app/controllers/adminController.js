@@ -184,8 +184,8 @@ adminlogout: async (req, res) => {
   getAllUsers:async(req,res)=>{
     const admin=req.session.admin;
     try {
-        const usersData=await User.find()
-        console.log("hi",usersData);
+        const usersData=await User.find().sort({ createdAt: -1 })
+        // console.log("hi",usersData);
         res.render('admin/userList',{users:usersData,admin:admin.name,layout:'./layouts/dashboard-layout'});
         
     } catch (error) {
@@ -199,22 +199,39 @@ adminlogout: async (req, res) => {
   blockUser:async (req,res)=>{
    
            try {
-            const userId = req.params.id;
-    
+            //const userId = req.params.id;
+            const userId = req.body.userId;
+
+            console.log("userId",userId);
             // Find the user by ID
             const user = await User.findById(userId);
-    
+            console.log("user",user);
             if (!user) {
                 return res.status(404).render("pages/404",{layout:"./layouts/loginLayout"});
             }
-    
+            if(user.isVerified){
             // Toggle the user's status
             const newStatus = user.Status === 'Active' ? 'Inactive' : 'Active';
-    
+            
             // Update the user's status in the database
-            await User.updateOne({ _id: userId }, { $set: { Status: newStatus } });
-    
+            //await User.updateOne({ _id: userId }, { $set: { Status: newStatus } });
+            await User.findByIdAndUpdate(userId, { Status: newStatus });
             res.sendStatus(200); // Send a success response
+        } else {
+            req.flash('error', 'User is not verified');
+            const responseData = {
+       
+                flash: {
+                    error: req.flash('error') // Include error flash message in the response
+                }
+              };
+              
+              return res.json(responseData);
+           
+           // res.status(400).send("User not verified"); // Handle unverified user
+        }
+            // }
+            // res.sendStatus(200); // Send a success response
         } catch (error) {
             console.error(error);
             res.status(500).send('Internal Server Error');
@@ -229,7 +246,7 @@ adminlogout: async (req, res) => {
         // Find the user by ID
         const user = await User.findById(userId);
 
-        if (!userId) {
+        if (!user) {
             return res.status(404).render("pages/404",{layout:"./layouts/loginLayout"});
         }
 

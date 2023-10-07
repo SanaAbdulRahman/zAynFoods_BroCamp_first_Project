@@ -1,13 +1,4 @@
 
-<style>
-    .noty_message {
-    background-color: #333 !important;
-    color: #fff !important;
-    padding: 10px !important;
-    border-radius: 5px !important;
-}
-
-</style>
 
 
 <section class="main-banner" id="home">
@@ -19,6 +10,12 @@
             <img src="/assetsimages/leaf.png" alt="">
         </div>
     </div>
+
+<!-- Add this element where you want to display flash messages in your HTML file -->
+<!-- <div id="flashMessage" class="flash-message"></div> -->
+
+
+
     <div class="sec-wp">
         <div class="container">
             <div class="row">
@@ -1078,21 +1075,62 @@
              axios.post('/update-cart',product).then(res=>{
              console.log(res);
                 cartCounter.innerText=res.data.totalQty
-                new Noty({
-                    type: 'success',
-                    timeout: 1000,
-                    text:'Item added to cart',
-                    progressBar: true,
-                    }).show();
-                 }).catch(err=>{
-                    console.log(err);
-                    new Noty({
-                    type: 'error',
-                    timeout: 1000,
-                    text:'Something went wrong',                    
-                    progressBar: true,
-                    }).show();
-                 })
+                 // Flash a success message
+
+
+                 if (res.data.flash && res.data.flash.success) {
+        // Display success flash message
+        displayFlashMessage('success', res.data.flash.success[0]);
+    } else if (res.data.flash && res.data.flash.error) {
+        // Display error flash message
+        displayFlashMessage('error', res.data.flash.error[0]);
+    }
+})
+        .catch(err => {
+            // Handle errors if necessary
+            console.error(err);
+        });
+
+
+        function displayFlashMessage(type, message) {
+    const flashMessage = document.getElementById('flashMessage');
+    flashMessage.textContent = message;
+    flashMessage.className = `flash-message flash-${type}`;
+    flashMessage.style.display = 'block';
+
+    // Hide the message after 3 seconds (3000 milliseconds)
+    setTimeout(() => {
+        flashMessage.style.display = 'none';
+    }, 2000);
+}
+//     req.flash('success', 'Item added to cart');
+
+// // Redirect to the cart page
+// window.location.href = '/cart';
+// }).catch(err => {
+// console.log(err);
+
+// // Flash an error message
+// req.flash('error', 'Something went wrong');
+
+// // Redirect to the cart page
+// window.location.href = '/cart';
+// });
+                // new Noty({
+                //     type: 'success',
+                //     timeout: 1000,
+                //     text:'Item added to cart',
+                //     progressBar: true,
+                //     }).show();
+                //  }).catch(err=>{
+                //     console.log(err);
+                //     new Noty({
+                //     type: 'error',
+                //     timeout: 1000,
+                //     text:'Something went wrong',                    
+                //     progressBar: true,
+                //     }).show();
+                //  })
         }
           
         addToCart.forEach((btn)=>{

@@ -83,7 +83,10 @@
 
           <div class="card rounded-3 mb-4">
             <div class="card-body p-4">
-              <%for(let product of Object.values(session.cart.items)) {%>
+              <%var total=0;%> <%for(let product of
+              Object.values(session.cart.items)) {%> <% var
+              sub=parseFloat(product.item.price * product.qty).toFixed(2)%>
+              <%total+=+sub%>
               <div
                 class="row d-flex justify-content-between align-items-center"
               >
@@ -105,38 +108,40 @@
                   </p>
                 </div>
                 <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                  <button
+                  <!-- <button
                     style="border: none"
-                    class="btn btn-link px-2"
-                    onclick="decrementQuantity('<%=JSON.stringify(product)%>')"
+                    class="btn btn-link px-2 decrementButton"
                   >
                     <i class="fas fa-minus"></i>
-                  </button>
-
+                  </button> -->
+                  <a href="/changeQuantity/<%=product.item.name%>?action=remove"
+                    >-</a
+                  >
                   <input
-                    id="form1"
                     min="0"
                     name="quantity"
                     value="<%= product.qty %>"
-                    class="form-control form-control-sm"
+                    class="form-control c form-control-sm quantity"
                   />
-
-                  <button
+                  <a href="/changeQuantity/<%=product.item.name%>?action=add"
+                    >+</a
+                  >
+                  <!-- <button
                     style="border: none"
-                    class="btn btn-link px-2"
-                    onclick="incrementQuantity('<%=JSON.stringify(product)%>')"
+                    class="btn btn-link px-2 incrementButton"
                   >
                     <i class="fas fa-plus"></i>
-                  </button>
+                  </button> -->
                 </div>
-
                 <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                  <a href="#!" class="text-danger"
+                  <a
+                    href="/changeQuantity/<%=product.item.name%>?action=clear"
+                    class="text-danger"
                     ><i class="fas fa-trash fa-lg"></i
                   ></a>
                 </div>
                 <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                  <h5 class="mb-0">₹<%= product.item.price * product.qty%></h5>
+                  <h5 class="mb-0">₹<%= sub%></h5>
                 </div>
               </div>
               <hr />
@@ -146,9 +151,7 @@
                   <!-- <div class="text-center pr-2">- Added ps-4 (padding on the left side) -->
                   <span class="text-lg fw-bold">Total Amount :</span>
 
-                  <span class="amount text-2xl fw-bold"
-                    >₹ <%= session.cart.totalPrice%></span
-                  >
+                  <span class="amount text-2xl fw-bold">₹ <%= total %></span>
                 </div>
               </div>
             </div>
@@ -157,13 +160,20 @@
           <div id="cart-items-container"></div>
 
           <div class="card">
-            <div class="card-body">
-              <button
-                type="button"
-                class="btn btn-warning btn-block btn-lg align-items-center w-100"
+            <div class="card-body d-flex justify-content-end">
+              <a href="/clearcart" class="clearcart"
+                ><button
+                  type="button"
+                  class="btn btn-danger buy-now"
+                  style="margin-right: 10px"
+                >
+                  Clear cart
+                </button></a
+              ><a href="/checkout"
+                ><button type="button" class="btn btn-warning buy-now">
+                  Proceed to checkout
+                </button></a
               >
-                Proceed to checkout
-              </button>
             </div>
           </div>
         </div>
@@ -181,9 +191,7 @@
                 <div class="d-flex justify-content-between border-bottom">
                   <p class="m-0 p-1">Sub Total</p>
                   <p class="m-0 p-1">
-                    &#8377;<span id="cartSubTotal2"
-                      ><%= session.cart.totalPrice%></span
-                    >
+                    &#8377;<span id="cartSubTotal2"><%= total%></span>
                   </p>
                 </div>
                 <div class="d-flex justify-content-between border-bottom">
@@ -194,9 +202,7 @@
                 <div class="d-flex justify-content-between border-bottom">
                   <p class="m-0 p-1">Total Price</p>
                   <p class="m-0 p-1">
-                    &#8377;<span id="cartTotal2"
-                      ><%= session.cart.totalPrice%></span
-                    >
+                    &#8377;<span id="cartTotal2"><%= total%></span>
                   </p>
                 </div>
                 <p id="cartErr" class="text-danger"></p>
@@ -275,138 +281,62 @@
 </section>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-  function decrementQuantity(product) {} //console.log("quantity decrement");
+  document.addEventListener("DOMContentLoaded", function () {
+    var changeQuantityButtons = document.querySelectorAll(".change-quantity");
 
-  function incrementQuantity(product) {
-    product = JSON.parse(product);
-    console.log("Increment quantity :", product);
+    changeQuantityButtons.forEach(function (button) {
+      button.addEventListener("click", function (event) {
+        event.preventDefault();
 
-    axios
-      .post("/update-cart", product.item)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      }); // console.log("quantity increment");
-  }
+        var product = button.getAttribute("data-product-id");
+        var action = button.getAttribute("data-action");
+
+        if (!product || !action) {
+          console.error("Invalid product ID or action");
+          return;
+        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.open(
+          "POST",
+          "/changeQuantity/" +
+            encodeURIComponent(product) +
+            "?action=" +
+            encodeURIComponent(action),
+          true
+        );
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            if (response.success) {
+              console.log("Cart updated successfully");
+              document.getElementById("cartCounter").textContent =
+                response.cart.totalQty;
+              // Update other parts of the UI as needed
+            } else {
+              console.error("Error updating cart: " + response.message);
+            }
+          } else {
+            console.error("Error updating cart: Status " + xhr.status);
+          }
+        };
+
+        xhr.onerror = function () {
+          console.error("Request failed");
+        };
+
+        xhr.send();
+      });
+    });
+  });
 </script>
-
-<!-- <script>
-    document.addEventListener("DOMContentLoaded", function() {
-    // Code to be executed when the DOM is ready
-    var cartItems=window.localStorage.getItem("cart-Items");
-    let arr = JSON.parse(cartItems);
-
- //   const groupedItems = {};
-
-// Iterate through the cart items and group them by product _id
-// arr.forEach(arr => {
-//   const id = arr._id;
-//   if (!groupedItems[id]) {
-//     groupedItems[id] = { ...arr, count: 0 };
-//   }
-//   groupedItems[id].count++;
-// });
-
-//  console.log("GroupedItems :",groupedItems);
-
-    const groupedItems = arr.reduce((acc, arr) => {
-      const id = arr._id;
-     
-               
-      if (!acc[id]) {
-        acc[id] = [];
-      }
-      acc[id].push(arr);
-      console.log("acc is :",acc);
-      return acc;
-    }, {});
-   
-
-        // const groupedItems= Object.groupBy(arr, ({ _id }) => id);
-         console.log(groupedItems);
-
-    console.log("cartItems :DOMContentLoaded",arr);
-        document.getElementById("cartCount").innerHTML=arr.length;
-        
-        var div = document.getElementById('cart-items-container');
-        arr.forEach(pdct => {
-            console.log("count equal to :",pdct.count ,":undefined");
-            console.log("name :", pdct.name);
-        const countList=groupedItems[pdct._id];
-        console.log("product list id :",pdct._id,"->", countList);
-            var target = document.getElementById('test');
-
-
-
-
-//var str = '<p>'+pdct.name+'<span>'+pdct._id+'</span></p>';
-var str='<div class="card rounded-3 mb-4">'+
-                    '<div class="card-body p-4">'+
-                      '<div class="row d-flex justify-content-between align-items-center">'+
-                        '<div class="col-md-2 col-lg-2 col-xl-2">'+
-                          '<img src="/assetsimages/dish/'+pdct.image+'"'+
-                            'class="img-fluid rounded-3" >'+
-                        '</div>'+
-                        '<div class="col-md-3 col-lg-3 col-xl-3">'+
-                          '<p class="lead fw-normal mb-2">'+pdct.name+'</p>'+
-                          //'<p><span class="text-muted">Size: </span>M <span class="text-muted">Color: </span>Grey</p>'+
-                          '<p><span class="text-muted">Quantity per person: </span>'+pdct.quantity+'</p>'+
-
-                        '</div>'+
-                        '<div class="col-md-3 col-lg-3 col-xl-2 d-flex">'+
-                          '<button class="btn btn-link px-2"'+
-                            '>'+
-                            '<i class="fas fa-minus"></i>'+
-                          '</button>'+
-          
-                          '<input id="form1" min="0" name="quantity" value="'+pdct.count+'" type="number"'+
-                            'class="form-control form-control-sm" />'+
-          
-                          '<button class="btn btn-link px-2"'+
-                            '>'+
-                            '<i class="fas fa-plus"></i>'+
-                          '</button>'+
-                        '</div>'+
-                        '<div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">'+
-                          '<h5 class="mb-0">Rs.'+pdct.price+'</h5>'+
-                        '</div>'+
-                        '<div class="col-md-1 col-lg-1 col-xl-1 text-end">'+
-                          '<a href="#!" class="text-danger"><i class="fas fa-trash fa-lg"></i></a>'+
-                        '</div>'+
-                      '</div>'+
-                    '</div>'+
-                  '</div>'
-
-var temp = document.createElement('div');
-temp.innerHTML = str;
-div.appendChild(temp);
-document.getElementById("cartCount").innerHTML=arr.length;
-        });
-        console.log("length is :",arr.length);
-});
-   
-</script> -->
-
-<!-- const inventory = [{ name: "asparagus", type: "vegetables", quantity: 5 },
-{ name: "bananas", type: "fruit", quantity: 0 },
-{ name: "goat", type: "meat", quantity: 23 },  
-{ name: "cherries", type: "fruit", quantity: 5 },  
-{ name: "fish", type: "meat", quantity: 22 },];
-const result = Object.groupBy(inventory, ({ type }) => type);
- 
-/* Result is:
-{
-  vegetables: [
-    { name: 'asparagus', type: 'vegetables', quantity: 5 },
-  ],
-  fruit: [
-    { name: "bananas", type: "fruit", quantity: 0 },
-    { name: "cherries", type: "fruit", quantity: 5 }
-  ],
-  meat: [
-    { name: "goat", type: "meat", quantity: 23 },
-    { name: "fish", type: "meat", quantity: 22 }
-  ]
-} -->
+<script>
+  $(function(){
+    $('a.clearcart').on('click',function(){
+      if(!confirm('Are you sure, you want to clear the cart?'))
+      return false;
+    })
+  })
+  </script>

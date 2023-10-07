@@ -1,71 +1,69 @@
-
-
 <div class="wrapper">
-	<div class="logo">
-		<!-- <img src="https://www.freepnglogos.com/uploads/twitter-logo-png/twitter-bird-symbols-png-logo-0.png" alt=""> -->
-		<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5z1j4fLB5vtHtqFP5ukPMpP0W9TGNNCKPXBYy2NDlOd8ZA7gNO8rI8fFZFbww4vRFxNg&usqp=CAU" alt="">
-	</div>
-	
-	<% if (message && message.length > 0) { %>
-		<div class="alert-danger">
-		  <%= message %>
-		</div>
-	  <% } %>
-	  
-	  <% if (successMessage && successMessage.length > 0) { %>
-		<div class="alert-success">
-		  <%= successMessage %>
-		</div>
-	  <% } %>
-	  
-      
-      
-	
-	<div class="text-center mt-4 name">
-		Login
-	</div>
-	<form action="/login" method="post" class="p-3 mt-3">
-		<div class="form-field d-flex align-items-center">
-			<span class="far fa-user"></span>
-			<input type="email" name="email" id="emailId" placeholder="Email">
-		</div>
-		
-		<div class="form-field d-flex align-items-center">
-			<span class="fas fa-key"></span>
-			<input type="password" name="password" id="form3Example4" placeholder="Password" maxlength="6" required >
-		
-		</div>
-		<div class="form-check mb-0 text-reset" >
-			<input class="form-check-input me-2" type="checkbox" value="" id="exampleCheck1" />
-			<label class="form-check-label text-center fs-6" for="form2Example3">
-			  Show Password
-			</label>
-		  </div>
-		
-		<% if (locals.error ) { %>
-			<label for="errormessage" class="text-danger">
-			 <%= error%></label>
-			 
-			<% } %>
-		<button type="submit" class="btn mt-3">Login</button>
-	</form>
-	<div class="text-center fs-6">
-		<a href="/forgot-password">Forget password?</a> or <a href="/register">Sign up</a>
-	</div>
+  <div class="logo">
+    <!-- <img src="https://www.freepnglogos.com/uploads/twitter-logo-png/twitter-bird-symbols-png-logo-0.png" alt=""> -->
+    <img
+      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5z1j4fLB5vtHtqFP5ukPMpP0W9TGNNCKPXBYy2NDlOd8ZA7gNO8rI8fFZFbww4vRFxNg&usqp=CAU"
+      alt=""
+    />
+  </div>
+
+  <% if (message && message.length > 0) { %>
+  <div class="alert-danger"><%= message %></div>
+  <% } %> <% if (successMessage && successMessage.length > 0) { %>
+  <div class="alert-success"><%= successMessage %></div>
+  <% } %>
+  <div class="text-center mt-4 name">Login</div>
+  <form action="/login" method="post" class="p-3 mt-3">
+    <div class="form-field d-flex align-items-center">
+      <span class="far fa-user"></span>
+      <input type="email" name="email" id="emailId" placeholder="Email" />
+    </div>
+
+    <div class="form-field d-flex align-items-center">
+      <span class="fas fa-key"></span>
+      <input
+        type="password"
+        name="password"
+        id="form3Example4"
+        placeholder="Password"
+        maxlength="6"
+        required
+      />
+    </div>
+    <div class="form-check mb-0 text-reset">
+      <input
+        class="form-check-input me-2"
+        type="checkbox"
+        value=""
+        id="exampleCheck1"
+      />
+      <label class="form-check-label text-center fs-6" for="form2Example3">
+        Show Password
+      </label>
+    </div>
+
+    <% if (locals.error ) { %>
+    <label for="errormessage" class="text-danger"> <%= error%></label>
+
+    <% } %>
+    <button type="submit" class="btn mt-3">Login</button>
+  </form>
+  <div class="text-center fs-6">
+    <a href="/forgot-password">Forget password?</a> or
+    <a href="/register">Sign up</a>
+  </div>
 </div>
 
 <script>
-	document.getElementById('exampleCheck1').addEventListener('change', () => {
-		let form3Example4 = document.getElementById('form3Example4');
-		
-		if (form3Example4.getAttribute('type') == 'password' ) {
-		  form3Example4.setAttribute('type', 'text');
-		  form3Example5.setAttribute('type', 'text');
-		} else {
-		  form3Example4.setAttribute('type', 'password');
-		  form3Example5.setAttribute('type', 'password');
-		}
-	})
+  document.getElementById("exampleCheck1").addEventListener("change", () => {
+    let form3Example4 = document.getElementById("form3Example4");
 
-	
-  </script>
+    if (form3Example4.getAttribute("type") == "password") {
+      form3Example4.setAttribute("type", "text");
+      form3Example5.setAttribute("type", "text");
+    } else {
+      form3Example4.setAttribute("type", "password");
+      form3Example5.setAttribute("type", "password");
+    }
+  });
+</script>

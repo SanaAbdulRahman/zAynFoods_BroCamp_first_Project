@@ -2,7 +2,7 @@
 
 module.exports={
     verifyLogin:(req,res,next)=>{
-        if(req.session.loggedIn){
+        if(req.session.user){
             next();
         }else{
             res.redirect('/login');

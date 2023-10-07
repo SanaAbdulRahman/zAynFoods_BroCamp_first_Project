@@ -1,3 +1,21 @@
+<style>
+    /* Add this CSS to style the flash message box */
+    .flash-message {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      background-color: #4caf50;
+      color: white;
+      border-radius: 5px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+  </style>
+
+
 <nav class="app-header navbar navbar-expand bg-body">
     <!-- <nav class="main-header navbar navbar-expand navbar-dark navbar-light"> -->
     <!--begin::Container-->
@@ -20,6 +38,7 @@
                    </form>
                 </li>     
               </ul>
+              <div id="flashMessage" class="flash-message"></div>
             <!-- <li class="nav-item d-none d-md-block">
                 <a href="#" class="nav-link">Home</a>
             </li>

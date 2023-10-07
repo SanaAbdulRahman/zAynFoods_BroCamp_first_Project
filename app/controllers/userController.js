@@ -203,6 +203,11 @@ insertUser: async (req, res) => {
                 //sendVerificationEmail(result,res);
                // sendOTPVerificationEmail({_id:user._id,email:user.email},res);
                 console.log("Result",result);
+                const newAddress=new Address({
+                  userId:result._id,
+                  details:[]
+                })
+               newAddress.save();
                 sendOTPVerificationEmail({_id:result._id,email:result.email},res);
                 // req.session.flashData = {
                 //   message: {
@@ -218,6 +223,8 @@ insertUser: async (req, res) => {
                // return 
                 res.redirect('/OTP')
               })
+              
+             
                 // req.session.user=userData;
                 //   res.redirect('/')
               },
@@ -354,6 +361,7 @@ loginPage: async (req, res) => {
 //login form post
  postLogin: async (req, res) => {
           try {
+            req.session.loggedIn=false;
           const email=req.body.email;
           const password=req.body.password;
            
@@ -373,12 +381,13 @@ loginPage: async (req, res) => {
 
              //res.render('user/login',{message:"Please verify your email ",layout:"./layouts/loginLayout"})
            }else{
-            req.session.loggedIn=false;
+            
             req.session.user=userData
+            req.session.loggedIn=true;
             res.redirect('/')
-            if(userData){
-              req.session.loggedIn=true;
-            }
+            // if(userData){
+             
+            // }
             
               // res.redirect('/')
            } 
@@ -534,6 +543,7 @@ loadHome:async(req,res)=>{
           // req.session.loggedIn=true;
          
           try {    
+            
            const categories=await Category.find()   
           Product.countDocuments()
             .then((c) => {
@@ -545,6 +555,7 @@ loadHome:async(req,res)=>{
             });
            
             const products= await Product.find({isDeleted:false}).sort({ createdAt: -1 }).populate('category');
+           
             if(user){
             res.render('user/home',{username:user.name,categories,products,layout:"./layouts/userLayout"})
             }else{
@@ -558,6 +569,14 @@ loadHome:async(req,res)=>{
    
 
 cartPage:async (req,res)=>{
+  console.log("req.session.cart",req.session.cart);
+
+  
+  if(req.session.cart && req.session.cart.length == 0){
+    
+    delete req.session.cart;
+    res.redirect('/cart');
+  }else{
           const user=req.session.user
           try {
             // const cartItems={
@@ -578,7 +597,8 @@ cartPage:async (req,res)=>{
             console.log(error.message);
           }
          
-        },
+        }
+      },
 getProductList:async(req,res)=>{
           const user=req.session.user
           try {
@@ -677,29 +697,52 @@ Object.values(cart.items).forEach(item=>{
 req.session.cart=cart;
 console.log('response',req.session.cart);
 //res.update('user/cart',{layout: "./layouts/userLayout"});
-return res.json({totalQty:req.session.cart.totalQty});
+
+req.flash('success', 'Item added to cart');
+
+const responseData = {
+  totalQty: req.session.cart.totalQty,
+  // ... other data you want to send back to the client
+  flash: {
+      success: req.flash('success') // Include success flash message in the response
+  }
+};
+
+return res.json(responseData);
+//return res.json({totalQty:req.session.cart.totalQty});
 },
 
-profilePage:(req,res)=>{
+profilePage:async (req,res)=>{
   const user=req.session.user
   try {
-    // const cartItems={
-    //   name:"abc",
-    //   description:"dsdsa",
-    //   quantity:"123",
-    //   proce:"333"
+    // Fetch the user's existing address details from the database
+    const userAddresses = await Address.find({ userId: user._id });
 
-    // }
-    // res.render('user/cart',{username:user.name,cartItems,layout:"./layouts/userLayout"});
-    if(user){
-    res.render('user/profile',{username:user.name,layout:"./layouts/userLayout"});
-    }else{
-    res.render('user/profile',{layout:"./layouts/userLayout"});
-
-    }
+    // Render the user profile page and pass userAddresses to the template
+    res.render('user/profile', { username:user.name,userAddresses, layout:"./layouts/userLayout" });
   } catch (error) {
-    console.log(error.message);
+    console.error(error);
+    res.render('pages/500',{layout:"./layouts/loginLayout"})
+   // res.status(500).send('Internal server error');
   }
+  // try {
+  //   // const cartItems={
+  //   //   name:"abc",
+  //   //   description:"dsdsa",
+  //   //   quantity:"123",
+  //   //   proce:"333"
+
+  //   // }
+  //   // res.render('user/cart',{username:user.name,cartItems,layout:"./layouts/userLayout"});
+  //   if(user){
+  //   res.render('user/profile',{username:user.name,layout:"./layouts/userLayout"});
+  //   }else{
+  //   res.render('user/profile',{layout:"./layouts/userLayout"});
+
+  //   }
+  // } catch (error) {
+  //   console.log(error.message);
+  // }
 },
 
 addAddress:async (req,res)=>{
@@ -711,10 +754,27 @@ addAddress:async (req,res)=>{
     const { name, email, mobile, apartment,building,flat, pincode, landmark } = req.body;
     console.log("req.body  :",req.body);
 
-    // Create a new address object
-    const newAddress = new Address({
-      userId, // User's ID
-      details: {
+    const addressBook=await Address.findOne({userId:userId});
+    console.log("addressBook :",addressBook);
+     if(addressBook.length>0)
+    
+    {
+      console.log("Address book exists");
+      await Address.findOneAndUpdate({userId:userId},{$push:{details:{
+        name:name,
+        email:email,
+        mobile:mobile,
+        apartment:apartment,
+        building:building,
+        flat:flat,
+        pincode:pincode,
+        landmark:landmark
+      }}})
+    }else{
+      console.log("Address book does not exist");
+    }
+    await Address.findOneAndUpdate({userId:userId},{$push:{
+      details:{
         name:name,
         email:email,
         mobile:mobile,
@@ -723,24 +783,130 @@ addAddress:async (req,res)=>{
         flat:flat,
         pincode:pincode,
         landmark:landmark,
-      },
-    });
+        select:true
+      }
+    }})
+    console.log("Default address saved");
+    // // Create a new address object
+    // const newAddress = new Address({
+    //   userId, // User's ID
+    //   details: {
+    //     name:name,
+    //     email:email,
+    //     mobile:mobile,
+    //     apartment:apartment,
+    //     building:building,
+    //     flat:flat,
+    //     pincode:pincode,
+    //     landmark:landmark,
+    //   },
+    // });
 
-    // Create a new address document in the Address collection
-    const addressDoc = await newAddress.save();
+    // // Create a new address document in the Address collection
+    // const addressDoc = await newAddress.save();
 
-    // const addressDoc = await Address.create(newAddress);
+    // // const addressDoc = await Address.create(newAddress);
 
-    // Find the user by their ID and push the new address document's ID to their address array
-    await User.findByIdAndUpdate(userId, { $push: { address: addressDoc._id } });
+    // // Find the user by their ID and push the new address document's ID to their address array
+    // await User.findByIdAndUpdate(userId, { $push: { address: addressDoc._id } });
 
     // Redirect the user to their profile page or any other desired location
-    res.redirect('/'); // Change this URL as needed
+    res.redirect('/profile'); // Change this URL as needed
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.render('pages/500',{layout:"./layouts/loginLayout"})
+   // res.status(500).json({ message: 'Internal server error' });
   }
 },
 
+getCheckoutPage:async (req,res)=>{
+  const user=req.session.user
+  try {
+   
+    const userAddresses = await Address.find({ userId: user._id });
+   
+    res.render('user/checkOut',{username:user.name,userAddresses,layout:"./layouts/userLayout"});
+   
+  } catch (error) {
+    console.error(error);
+    res.render('pages/500',{layout:"./layouts/loginLayout"})
+   
+  }
+  
+},
+getOrderPage:async(req,res)=>{
+  
+},
+orderStore: (req,res)=>{
+ console.log(req.body);
+},
+
+
+changeProductQuantity: (req, res) => {
+  var slug = req.params.product;
+  var cart = req.session.cart;
+  var action = req.query.action;
+
+  console.log("cart:", cart);
+  console.log("action:", action);
+  console.log("slug:", slug);
+
+  // Get the keys (product IDs) of the cart object
+  //var cartKeys = Object.keys(cart);
+  var cartKeys = Object.keys(cart.items);
+  console.log("cartKeys :",cartKeys);
+
+  for (var i = 0; i < cartKeys.length; i++) {
+      var productId = cartKeys[i];
+      console.log("productId :",productId);
+      var cartItem = cart.items[productId].item;
+     // var cartItem = cartKeys[productId].item;
+      console.log("cartItem :",cartItem);
+
+      if (cartItem.name === slug) {
+          switch (action) {
+              case "add":
+                  cart.items[productId].qty++;
+                  break;
+              case "remove":
+                  cart.items[productId].qty--;
+                  cart.totalQty--;
+                  if (cart.items[productId].qty <= 0) {
+                   
+                      // Remove the item from the cart if quantity is zero or negative
+                      delete cart.items[productId];
+                  
+                }
+                  break;
+              case "clear":
+                
+                  // Clear the item from the cart
+                  delete cart.items[productId];
+                
+                  break;
+              default:
+                  console.log("Update problem");
+                  break;
+          }
+          if (Object.keys(cart.items).length === 0) {
+            delete req.session.cart;
+          }
+  
+          break;
+      }
+  }
+
+  req.flash('success', 'Cart updated!');
+  res.redirect('/cart');
+},
+
+clearCart: (req,res)=>{
+            delete req.session.cart;
+            req.flash('success', 'Cart Cleared');
+            res.redirect('/cart');
+},
+
+
+// Import necessary modules and set up your Express routes...
 
 }

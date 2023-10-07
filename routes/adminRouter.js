@@ -30,7 +30,7 @@ router.get('/logout',adminauth.isAdminLogIn,adminController.adminlogout)
 router.get('/productList',adminauth.isAdminLogIn,adminController.getAllProducts);
 router.get('/categoryList',adminauth.isAdminLogIn,adminController.getAllCategories);
 router.get('/userList',adminauth.isAdminLogIn,adminController.getAllUsers);
-router.post('/block-user/:id',adminController.blockUser);
+router.post('/block-user',adminauth.isAdminLogIn,adminController.blockUser);
 router.post('/unBlock-user/:id',adminController.unBlockUser);
 router.get('/addProduct',adminController.addProductForm);
 router.get('/add-product',adminauth.isAdminLogIn,adminController.addProduct);
